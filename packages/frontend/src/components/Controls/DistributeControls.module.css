@@ -1,0 +1,150 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.backBtn {
+  padding: 3px 9px;
+  border-radius: 5px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text-dim);
+  font-size: 0.78rem;
+}
+
+.backBtn:hover {
+  color: var(--ui-text);
+  border-color: var(--accent);
+}
+
+.heading {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ui-text-dim);
+}
+
+.sum {
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 3ch;
+  text-align: right;
+}
+
+.sum.valid  { color: var(--accent); }
+.sum.invalid { color: #c05050; }
+
+.stepsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.input {
+  width: 40px;
+  text-align: center;
+  background: var(--ui-surface);
+  border: 2px solid var(--ui-border);
+  border-radius: 5px;
+  color: var(--ui-text);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 2px 0;
+  /* hide spin buttons */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  display: none;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.nudge {
+  width: 28px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-size: 0.65rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nudge:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: rgba(93, 158, 93, 0.12);
+}
+
+.nudge:disabled {
+  opacity: 0.3;
+}
+
+.pathBtns {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.pathBtn {
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text-dim);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.pathBtn:hover {
+  border-color: var(--accent);
+  color: var(--ui-text);
+}
+
+.confirmBtn {
+  padding: 7px 28px;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: rgba(93, 158, 93, 0.15);
+  color: var(--ui-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.1s;
+}
+
+.confirmBtn:hover:not(:disabled) {
+  background: rgba(93, 158, 93, 0.3);
+}
+
+.confirmBtn:disabled {
+  opacity: 0.4;
+  border-color: var(--ui-border);
+}

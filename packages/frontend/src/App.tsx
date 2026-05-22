@@ -4,6 +4,7 @@ import { useValidMoves } from './hooks/useValidMoves';
 import { Board } from './components/Board/Board';
 import { PieceSelector } from './components/Controls/PieceSelector';
 import { SlideControls } from './components/Controls/SlideControls';
+import { DistributeControls } from './components/Controls/DistributeControls';
 import { SizeSelector } from './components/Controls/SizeSelector';
 import { Header } from './components/Header/Header';
 import { GameOverlay } from './components/GameOverlay/GameOverlay';
@@ -44,7 +45,16 @@ export default function App() {
         />
 
         <div className={styles.controls}>
-          {game.uiPhase.phase === 'sliding' ? (
+          {game.uiPhase.phase === 'distributing' ? (
+            <DistributeControls
+              uiPhase={game.uiPhase}
+              onDropChange={game.setDropAt}
+              onRemoveStep={game.removeLastStep}
+              onAddStep={game.addStep}
+              onConfirm={game.confirmSlide}
+              onCancel={game.cancelSelection}
+            />
+          ) : game.uiPhase.phase === 'sliding' ? (
             <SlideControls
               uiPhase={game.uiPhase}
               validDirections={validDirections}

@@ -39,6 +39,10 @@ export interface UseGameStateReturn {
   setSlideCount: (n: number) => void;
   clickCell: (row: number, col: number) => void;
   clickDirection: (dir: Direction) => void;
+  setDropAt: (index: number, value: number) => void;
+  removeLastStep: () => void;
+  addStep: () => void;
+  confirmSlide: () => void;
   startGame: (opts: StartGameOpts) => void;
   cancelSelection: () => void;
 }
@@ -73,7 +77,7 @@ export function useGameState(): UseGameStateReturn {
 
   const selectPieceType = (pt: PieceType) => {
     if (uiPhase.phase === 'cpu-thinking') return;
-    if (gameState.turnNumber <= 2) return; // locked to flat on swap turns
+    if (gameState.turnNumber <= 2) return;
     setUiPhase((prev) =>
       prev.phase === 'placing' && prev.pieceType === pt
         ? { phase: 'idle' }
@@ -82,7 +86,7 @@ export function useGameState(): UseGameStateReturn {
   };
 
   const selectStack = (row: number, col: number) => {
-    if (uiPhase.phase === 'cpu-thinking') return;
+    if (uiPhase.phase === 'cpu-thinking' || uiPhase.phase === 'distributing') return;
     if (uiPhase.phase === 'sliding' && uiPhase.row === row && uiPhase.col === col) {
       setUiPhase({ phase: 'idle' });
       return;
@@ -108,12 +112,49 @@ export function useGameState(): UseGameStateReturn {
     setUiPhase({ phase: 'idle' });
   };
 
+  // Clicking a direction now enters distributing mode instead of applying immediately.
   const clickDirection = (dir: Direction) => {
     if (uiPhase.phase !== 'sliding') return;
     const { row, col, count } = uiPhase;
     const drops = computeDrops(gameState.board, gameState.size, row, col, dir, count);
     if (drops.length === 0) return;
-    const move: SlideMove = { kind: 'slide', row, col, direction: dir, drops };
+    setUiPhase({ phase: 'distributing', row, col, count, direction: dir, drops, maxSteps: drops.length });
+  };
+
+  const setDropAt = (index: number, value: number) => {
+    if (uiPhase.phase !== 'distributing') return;
+    const drops = [...uiPhase.drops];
+    drops[index] = Math.max(1, value);
+    setUiPhase({ ...uiPhase, drops });
+  };
+
+  // Merge the last step into the previous one, shortening the slide path.
+  const removeLastStep = () => {
+    if (uiPhase.phase !== 'distributing' || uiPhase.drops.length <= 1) return;
+    const drops = [...uiPhase.drops];
+    const last = drops.pop()!;
+    drops[drops.length - 1] += last;
+    setUiPhase({ ...uiPhase, drops });
+  };
+
+  // Split the last step to extend the path by one cell (only possible when
+  // the path hasn't already reached its maximum and the last step has > 1 piece).
+  const addStep = () => {
+    if (uiPhase.phase !== 'distributing') return;
+    if (uiPhase.drops.length >= uiPhase.maxSteps) return;
+    const drops = [...uiPhase.drops];
+    if (drops[drops.length - 1] <= 1) return;
+    drops[drops.length - 1] -= 1;
+    drops.push(1);
+    setUiPhase({ ...uiPhase, drops });
+  };
+
+  const confirmSlide = () => {
+    if (uiPhase.phase !== 'distributing') return;
+    const { row, col, direction, drops, count } = uiPhase;
+    if (drops.some((d) => d < 1)) return;
+    if (drops.reduce((a, b) => a + b, 0) !== count) return;
+    const move: SlideMove = { kind: 'slide', row, col, direction, drops };
     if (validateMove(gameState, move) !== null) return;
     dispatch({ type: 'APPLY_MOVE', move });
     setUiPhase({ phase: 'idle' });
@@ -129,7 +170,17 @@ export function useGameState(): UseGameStateReturn {
     setUiPhase({ phase: 'placing', pieceType: 'flat' });
   };
 
-  const cancelSelection = () => setUiPhase({ phase: 'idle' });
+  // Cancel distributing → return to sliding so the user can pick a different direction.
+  // Cancel anything else → idle.
+  const cancelSelection = () => {
+    if (uiPhase.phase === 'distributing') {
+      const { row, col, count } = uiPhase;
+      const maxCount = Math.min(gameState.size, gameState.board[row][col].length);
+      setUiPhase({ phase: 'sliding', row, col, count, maxCount });
+    } else {
+      setUiPhase({ phase: 'idle' });
+    }
+  };
 
   return {
     gameState,
@@ -141,6 +192,10 @@ export function useGameState(): UseGameStateReturn {
     setSlideCount,
     clickCell,
     clickDirection,
+    setDropAt,
+    removeLastStep,
+    addStep,
+    confirmSlide,
     startGame,
     cancelSelection,
   };
