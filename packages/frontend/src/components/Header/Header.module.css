@@ -1,0 +1,68 @@
+.header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--ui-surface);
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ui-text);
+  margin-right: auto;
+}
+
+.turn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--ui-border);
+  flex-shrink: 0;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--ui-border);
+}
+
+.white { background: var(--piece-white); }
+.black { background: var(--piece-black); }
+
+.swap {
+  color: var(--ui-text-dim);
+  font-size: 0.8em;
+}
+
+.turnNum {
+  font-size: 0.75rem;
+  color: var(--ui-text-dim);
+}
+
+.counts {
+  display: flex;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+}
+
+.playerCount {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

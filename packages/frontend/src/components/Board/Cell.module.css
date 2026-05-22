@@ -1,0 +1,45 @@
+.cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  user-select: none;
+  transition: filter 0.08s;
+}
+
+.light { background-color: var(--cell-light); }
+.dark  { background-color: var(--cell-dark); }
+
+.ownStack {
+  cursor: pointer;
+}
+.ownStack:hover {
+  filter: brightness(1.1);
+}
+
+.validPlace {
+  cursor: pointer;
+  background-image: radial-gradient(circle, var(--cell-valid) 55%, transparent 100%);
+}
+.validPlace:hover {
+  filter: brightness(1.08);
+}
+
+.selected {
+  outline: 3px solid var(--cell-selected-ring);
+  outline-offset: -3px;
+  z-index: 1;
+}
+
+.heightBadge {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: clamp(0.5rem, 1.8cqw, 0.75rem);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 3px #000, 0 0 3px #000;
+  line-height: 1;
+  pointer-events: none;
+}

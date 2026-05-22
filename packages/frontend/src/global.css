@@ -1,0 +1,45 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --cell-light: #f0d9b5;
+  --cell-dark: #b58863;
+  --cell-valid: rgba(95, 196, 95, 0.28);
+  --cell-selected-ring: rgba(246, 246, 105, 0.85);
+  --piece-white: #f0d0a0;
+  --piece-white-border: #c4a882;
+  --piece-black: #1e1e1e;
+  --piece-black-border: #5a5a5a;
+  --ui-bg: #2b2b2b;
+  --ui-surface: #363636;
+  --ui-border: #4a4a4a;
+  --ui-text: #e8e8e8;
+  --ui-text-dim: #999;
+  --accent: #5d9e5d;
+  --accent-glow: rgba(93, 158, 93, 0.5);
+  --danger: #c0392b;
+
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  line-height: 1.4;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}

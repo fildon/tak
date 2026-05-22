@@ -1,0 +1,83 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.card {
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  min-width: 260px;
+}
+
+.swatch {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 4px solid var(--ui-border);
+  margin-bottom: 4px;
+}
+.white { background: var(--piece-white); border-color: var(--piece-white-border); }
+.black { background: var(--piece-black); border-color: var(--piece-black-border); }
+
+.winner {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.reason {
+  font-size: 1rem;
+  color: var(--ui-text-dim);
+  margin-bottom: 8px;
+}
+
+.playAgain {
+  padding: 10px 32px;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: rgba(93, 158, 93, 0.15);
+  color: var(--ui-text);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.1s;
+}
+
+.playAgain:hover {
+  background: rgba(93, 158, 93, 0.3);
+}
+
+.sizes {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.sizeBtn {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text-dim);
+  font-size: 0.8rem;
+}
+
+.sizeBtn:hover {
+  border-color: var(--accent);
+  color: var(--ui-text);
+}
+
+.sizeBtn.active {
+  border-color: var(--accent);
+  color: var(--ui-text);
+}

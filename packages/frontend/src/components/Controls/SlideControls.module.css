@@ -1,0 +1,76 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ui-text-dim);
+}
+
+.dpad {
+  display: grid;
+  grid-template-areas:
+    ". up ."
+    "left center right"
+    ". down .";
+  grid-template-columns: 44px 72px 44px;
+  grid-template-rows: 44px 44px 44px;
+  gap: 4px;
+  align-items: center;
+  justify-items: center;
+}
+
+.dirBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  border: 2px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: #555;
+  transition: border-color 0.1s, color 0.1s, box-shadow 0.1s;
+}
+
+.dirBtn.valid {
+  border-color: var(--accent);
+  color: var(--ui-text);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.dirBtn.valid:hover {
+  background: rgba(93, 158, 93, 0.15);
+}
+
+.countWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nudge {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.nudge:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.countVal {
+  font-size: 1.1rem;
+  font-weight: 700;
+  min-width: 1.5ch;
+  text-align: center;
+}

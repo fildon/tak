@@ -1,0 +1,30 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+  margin-right: 2px;
+}
+
+.btn {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 2px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-size: 0.8rem;
+  transition: border-color 0.1s;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+}
+
+.btn.active {
+  border-color: var(--accent);
+  background: rgba(93, 158, 93, 0.2);
+}
