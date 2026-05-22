@@ -60,19 +60,28 @@ export function useGameState(): UseGameStateReturn {
     }
   }, [gameState.turnNumber, gameState.result]);
 
-  // CPU move trigger
+  // CPU move trigger — fires the async Wasm engine; keeps the UI non-blocking.
   useEffect(() => {
     if (gameMode !== 'pvc') return;
     if (gameState.currentPlayer !== cpuColor) return;
     if (gameState.result !== null) return;
 
     setUiPhase({ phase: 'cpu-thinking' });
-    const timer = setTimeout(() => {
-      const move = getCpuMove(gameState);
-      dispatch({ type: 'APPLY_MOVE', move });
-      setUiPhase({ phase: 'idle' });
-    }, 400);
-    return () => clearTimeout(timer);
+    let cancelled = false;
+
+    getCpuMove(gameState)
+      .then((move) => {
+        if (!cancelled) {
+          dispatch({ type: 'APPLY_MOVE', move });
+          setUiPhase({ phase: 'idle' });
+        }
+      })
+      .catch((err: unknown) => {
+        console.error('CPU move failed:', err);
+        if (!cancelled) setUiPhase({ phase: 'idle' });
+      });
+
+    return () => { cancelled = true; };
   }, [gameState, gameMode, cpuColor]);
 
   const selectPieceType = (pt: PieceType) => {

@@ -1,0 +1,19 @@
+{
+  "name": "@tak/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tak engine compiled to WebAssembly via wasm-pack",
+  "main": "pkg/tak_engine.js",
+  "module": "pkg/tak_engine.js",
+  "types": "pkg/tak_engine.d.ts",
+  "exports": {
+    ".": {
+      "import": "./pkg/tak_engine.js",
+      "types": "./pkg/tak_engine.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "wasm-pack build --target web --out-name tak_engine",
+    "clean": "node -e \"require('fs').rmSync('pkg',{recursive:true,force:true})\""
+  }
+}
