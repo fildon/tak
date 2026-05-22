@@ -66,3 +66,15 @@
   align-items: center;
   gap: 4px;
 }
+
+.cpuBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  padding: 0 3px;
+  line-height: 1.4;
+  opacity: 0.85;
+}

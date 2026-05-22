@@ -9,4 +9,5 @@ export type UIPhase =
       col: number;
       count: number;
       maxCount: number;
-    };
+    }
+  | { phase: 'cpu-thinking' };

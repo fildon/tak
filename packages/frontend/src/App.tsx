@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useGameState } from './hooks/useGameState';
 import { useValidMoves } from './hooks/useValidMoves';
 import { Board } from './components/Board/Board';
@@ -6,6 +7,7 @@ import { SlideControls } from './components/Controls/SlideControls';
 import { SizeSelector } from './components/Controls/SizeSelector';
 import { Header } from './components/Header/Header';
 import { GameOverlay } from './components/GameOverlay/GameOverlay';
+import { GameSetup } from './components/GameSetup/GameSetup';
 import styles from './App.module.css';
 
 export default function App() {
@@ -14,15 +16,22 @@ export default function App() {
     game.gameState,
     game.uiPhase,
   );
+  const [showSetup, setShowSetup] = useState(true);
+
+  const isThinking = game.uiPhase.phase === 'cpu-thinking';
 
   return (
     <div className={styles.app}>
-      <Header gameState={game.gameState} />
+      <Header
+        gameState={game.gameState}
+        gameMode={game.gameMode}
+        cpuColor={game.cpuColor}
+      />
 
       <main className={styles.main}>
         <SizeSelector
           currentSize={game.gameState.size}
-          onSelect={game.newGame}
+          onSelect={(size) => game.startGame({ mode: game.gameMode, cpuColor: game.cpuColor, size })}
         />
 
         <Board
@@ -31,6 +40,7 @@ export default function App() {
           validPlaceCells={validPlaceCells}
           onCellClick={game.clickCell}
           onStackClick={game.selectStack}
+          className={isThinking ? styles.thinking : undefined}
         />
 
         <div className={styles.controls}>
@@ -54,8 +64,16 @@ export default function App() {
       {game.gameState.result && (
         <GameOverlay
           result={game.gameState.result}
-          size={game.gameState.size}
-          onNewGame={game.newGame}
+          onPlayAgain={() => setShowSetup(true)}
+        />
+      )}
+
+      {showSetup && (
+        <GameSetup
+          onStart={(opts) => {
+            game.startGame(opts);
+            setShowSetup(false);
+          }}
         />
       )}
     </div>

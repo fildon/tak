@@ -9,6 +9,7 @@ interface Props {
   validPlaceCells: Set<string>;
   onCellClick: (row: number, col: number) => void;
   onStackClick: (row: number, col: number) => void;
+  className?: string;
 }
 
 export function Board({
@@ -17,6 +18,7 @@ export function Board({
   validPlaceCells,
   onCellClick,
   onStackClick,
+  className,
 }: Props) {
   const { board, size, currentPlayer } = gameState;
 
@@ -25,7 +27,7 @@ export function Board({
 
   return (
     <div
-      className={styles.grid}
+      className={[styles.grid, className].filter(Boolean).join(' ')}
       style={{ '--board-size': size } as React.CSSProperties}
     >
       {board.flatMap((rowArr, r) =>

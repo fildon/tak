@@ -1,11 +1,14 @@
 import type { GameState } from '@tak/shared';
+import type { CpuColor, GameMode } from '../../types/gameMode';
 import styles from './Header.module.css';
 
 interface Props {
   gameState: GameState;
+  gameMode: GameMode;
+  cpuColor: CpuColor;
 }
 
-export function Header({ gameState }: Props) {
+export function Header({ gameState, gameMode, cpuColor }: Props) {
   const { currentPlayer, players, turnNumber, result } = gameState;
   const isSwapTurn = turnNumber <= 2;
 
@@ -33,6 +36,9 @@ export function Header({ gameState }: Props) {
             <span className={[styles.dot, styles[color]].join(' ')} />
             {players[color].flatCount}f
             {players[color].capstoneCount > 0 && ` ${players[color].capstoneCount}c`}
+            {gameMode === 'pvc' && color === cpuColor && (
+              <span className={styles.cpuBadge}>CPU</span>
+            )}
           </span>
         ))}
       </div>

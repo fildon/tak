@@ -22,3 +22,9 @@
   align-items: center;
   justify-content: center;
 }
+
+.thinking {
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}

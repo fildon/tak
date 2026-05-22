@@ -6,7 +6,9 @@ import {
 } from '@tak/shared';
 import type { Color, Direction, GameState, Move, PieceType, PlaceMove, SlideMove } from '@tak/shared';
 import type { UIPhase } from '../types/uiState';
+import type { CpuColor, GameMode } from '../types/gameMode';
 import { computeDrops } from '../utils/moves';
+import { getCpuMove } from '../cpu/getCpuMove';
 
 type GameAction =
   | { type: 'APPLY_MOVE'; move: Move }
@@ -21,21 +23,31 @@ function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
+export interface StartGameOpts {
+  mode: GameMode;
+  cpuColor: CpuColor;
+  size: number;
+}
+
 export interface UseGameStateReturn {
   gameState: GameState;
   uiPhase: UIPhase;
+  gameMode: GameMode;
+  cpuColor: CpuColor;
   selectPieceType: (pt: PieceType) => void;
   selectStack: (row: number, col: number) => void;
   setSlideCount: (n: number) => void;
   clickCell: (row: number, col: number) => void;
   clickDirection: (dir: Direction) => void;
-  newGame: (size: number) => void;
+  startGame: (opts: StartGameOpts) => void;
   cancelSelection: () => void;
 }
 
 export function useGameState(): UseGameStateReturn {
   const [gameState, dispatch] = useReducer(gameReducer, undefined, () => createGame(5));
   const [uiPhase, setUiPhase] = useState<UIPhase>({ phase: 'idle' });
+  const [gameMode, setGameMode] = useState<GameMode>('pvp');
+  const [cpuColor, setCpuColor] = useState<CpuColor>('black');
 
   // Auto-enter placing mode on swap turns (turns 1 & 2)
   useEffect(() => {
@@ -44,7 +56,23 @@ export function useGameState(): UseGameStateReturn {
     }
   }, [gameState.turnNumber, gameState.result]);
 
+  // CPU move trigger
+  useEffect(() => {
+    if (gameMode !== 'pvc') return;
+    if (gameState.currentPlayer !== cpuColor) return;
+    if (gameState.result !== null) return;
+
+    setUiPhase({ phase: 'cpu-thinking' });
+    const timer = setTimeout(() => {
+      const move = getCpuMove(gameState);
+      dispatch({ type: 'APPLY_MOVE', move });
+      setUiPhase({ phase: 'idle' });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [gameState, gameMode, cpuColor]);
+
   const selectPieceType = (pt: PieceType) => {
+    if (uiPhase.phase === 'cpu-thinking') return;
     if (gameState.turnNumber <= 2) return; // locked to flat on swap turns
     setUiPhase((prev) =>
       prev.phase === 'placing' && prev.pieceType === pt
@@ -54,6 +82,7 @@ export function useGameState(): UseGameStateReturn {
   };
 
   const selectStack = (row: number, col: number) => {
+    if (uiPhase.phase === 'cpu-thinking') return;
     if (uiPhase.phase === 'sliding' && uiPhase.row === row && uiPhase.col === col) {
       setUiPhase({ phase: 'idle' });
       return;
@@ -90,9 +119,14 @@ export function useGameState(): UseGameStateReturn {
     setUiPhase({ phase: 'idle' });
   };
 
-  const newGame = (size: number) => {
-    dispatch({ type: 'NEW_GAME', size });
-    setUiPhase({ phase: 'idle' });
+  const startGame = (opts: StartGameOpts) => {
+    setGameMode(opts.mode);
+    setCpuColor(opts.cpuColor);
+    dispatch({ type: 'NEW_GAME', size: opts.size });
+    // Every new game starts at turnNumber 1 (swap turn). Set placing directly
+    // rather than relying on the swap-turn effect, which only fires when
+    // turnNumber *changes* — it stays at 1 if no moves were made before reset.
+    setUiPhase({ phase: 'placing', pieceType: 'flat' });
   };
 
   const cancelSelection = () => setUiPhase({ phase: 'idle' });
@@ -100,12 +134,14 @@ export function useGameState(): UseGameStateReturn {
   return {
     gameState,
     uiPhase,
+    gameMode,
+    cpuColor,
     selectPieceType,
     selectStack,
     setSlideCount,
     clickCell,
     clickDirection,
-    newGame,
+    startGame,
     cancelSelection,
   };
 }
