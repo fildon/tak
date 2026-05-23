@@ -2,6 +2,7 @@ mod apply;
 mod eval;
 mod movegen;
 mod search;
+mod tt;
 mod types;
 
 use wasm_bindgen::prelude::*;

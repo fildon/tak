@@ -17,6 +17,11 @@
 /// * **Move ordering** at every level: winning moves evaluated first by doing a
 ///   shallow apply before sorting.  This dramatically improves cut-off rates.
 ///
+/// * **Transposition table**: Zobrist-hashed positions are stored in a 1 M
+///   entry fixed-size table (see `tt.rs`).  A TT hit can return early with an
+///   exact score or tighten the alpha/beta window, cutting off the subtree.
+///   The table persists across calls so positions from earlier turns are reused.
+///
 /// * **Time budget**: `js_sys::Date::now()` is checked after every root child
 ///   and every `NODE_CHECK_INTERVAL` interior nodes.  When the deadline passes
 ///   the search unwinds and returns the best move found so far.
@@ -24,7 +29,7 @@
 /// * **Iterative deepening**: depth 1 → … → MAX_DEPTH, stopping when the
 ///   deadline is hit or a forced win/loss is detected.
 
-use crate::{apply::apply_move, eval::*, movegen::gen_moves, types::*};
+use crate::{apply::apply_move, eval::*, movegen::gen_moves, tt::{hash_state, TtFlag, TT, ZOBRIST}, types::*};
 
 const MAX_DEPTH: u32 = 12;
 const NODE_CHECK_INTERVAL: u32 = 256;
@@ -171,6 +176,13 @@ fn negamax(
         return evaluate(state);
     }
 
+    // Transposition table probe — may return early or tighten the window.
+    let hash = ZOBRIST.with(|z| hash_state(state, z));
+    let original_alpha = alpha;
+    if let Some(tt_score) = TT.with(|tt| tt.borrow().probe(hash, depth, alpha, beta)) {
+        return tt_score;
+    }
+
     let moves = gen_moves(state);
     if moves.is_empty() {
         return evaluate(state);
@@ -198,6 +210,7 @@ fn negamax(
     for (prescore, mv) in scored {
         // If this move is already known to be a forced win, take it immediately.
         if prescore >= SCORE_WIN / 2 {
+            TT.with(|tt| tt.borrow_mut().store(hash, depth, SCORE_WIN, TtFlag::Exact));
             return SCORE_WIN;
         }
 
@@ -211,6 +224,16 @@ fn negamax(
             break; // Beta cut-off
         }
     }
+
+    // Store the result in the transposition table.
+    let flag = if alpha <= original_alpha {
+        TtFlag::UpperBound // all moves failed low — score is an upper bound
+    } else if alpha >= beta {
+        TtFlag::LowerBound // caused a cut-off — score is a lower bound
+    } else {
+        TtFlag::Exact // alpha improved within window — score is exact
+    };
+    TT.with(|tt| tt.borrow_mut().store(hash, depth, alpha, flag));
 
     alpha
 }
