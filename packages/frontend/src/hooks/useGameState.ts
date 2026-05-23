@@ -1,6 +1,14 @@
 import { useEffect, useReducer, useState } from 'react';
 import { applyMove, createGame, validateMove } from '@tak/shared';
-import type { Direction, GameState, Move, PieceType, PlaceMove, SlideMove } from '@tak/shared';
+import type {
+  Color,
+  Direction,
+  GameState,
+  Move,
+  PieceType,
+  PlaceMove,
+  SlideMove,
+} from '@tak/shared';
 import type { UIPhase } from '../types/uiState';
 import type { AiDifficulty, CpuColor, GameMode } from '../types/gameMode';
 import { AI_DIFFICULTY_MS } from '../types/gameMode';
@@ -15,7 +23,8 @@ interface ReducerState {
 type GameAction =
   | { type: 'APPLY_MOVE'; move: Move }
   | { type: 'NEW_GAME'; size: number }
-  | { type: 'UNDO'; steps: number };
+  | { type: 'UNDO'; steps: number }
+  | { type: 'RESIGN' };
 
 function gameReducer(state: ReducerState, action: GameAction): ReducerState {
   switch (action.type) {
@@ -37,6 +46,13 @@ function gameReducer(state: ReducerState, action: GameAction): ReducerState {
         current: state.past[state.past.length - steps],
       };
     }
+    case 'RESIGN': {
+      const opponent: Color = state.current.currentPlayer === 'white' ? 'black' : 'white';
+      return {
+        past: [...state.past, state.current],
+        current: { ...state.current, result: { winner: opponent, reason: 'resign' } },
+      };
+    }
   }
 }
 
@@ -54,6 +70,7 @@ export interface UseGameStateReturn {
   cpuColor: CpuColor;
   difficulty: AiDifficulty;
   canUndo: boolean;
+  canResign: boolean;
   selectPieceType: (pt: PieceType) => void;
   selectStack: (row: number, col: number) => void;
   setSlideCount: (n: number) => void;
@@ -66,6 +83,7 @@ export interface UseGameStateReturn {
   startGame: (opts: StartGameOpts) => void;
   cancelSelection: () => void;
   undo: () => void;
+  resign: () => void;
 }
 
 export function useGameState(): UseGameStateReturn {
@@ -81,6 +99,9 @@ export function useGameState(): UseGameStateReturn {
   const gameState = reducerState.current;
 
   const canUndo = reducerState.past.length > 0 && uiPhase.phase !== 'cpu-thinking';
+
+  const canResign =
+    gameState.result === null && gameState.turnNumber > 2 && uiPhase.phase !== 'cpu-thinking';
 
   // Auto-enter placing mode on swap turns (turns 1 & 2)
   useEffect(() => {
@@ -239,6 +260,12 @@ export function useGameState(): UseGameStateReturn {
     setUiPhase({ phase: 'idle' });
   };
 
+  const resign = () => {
+    if (!canResign) return;
+    dispatch({ type: 'RESIGN' });
+    setUiPhase({ phase: 'idle' });
+  };
+
   return {
     gameState,
     uiPhase,
@@ -246,6 +273,7 @@ export function useGameState(): UseGameStateReturn {
     cpuColor,
     difficulty,
     canUndo,
+    canResign,
     selectPieceType,
     selectStack,
     setSlideCount,
@@ -258,5 +286,6 @@ export function useGameState(): UseGameStateReturn {
     startGame,
     cancelSelection,
     undo,
+    resign,
   };
 }

@@ -63,3 +63,57 @@
 .newGameButton:hover {
   background: rgba(93, 158, 93, 0.15);
 }
+
+.resignArea {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.resignButton {
+  background: none;
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.resignButton:hover {
+  border-color: #c05050;
+  color: #c05050;
+}
+
+.confirmResignButton {
+  background: rgba(192, 80, 80, 0.12);
+  border: 1px solid #c05050;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: #c05050;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.confirmResignButton:hover {
+  background: rgba(192, 80, 80, 0.28);
+}
+
+.cancelResignButton {
+  background: none;
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.cancelResignButton:hover {
+  color: var(--ui-text);
+}
