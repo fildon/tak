@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameState } from './hooks/useGameState';
 import { useValidMoves } from './hooks/useValidMoves';
 import { Board } from './components/Board/Board';
@@ -17,6 +17,12 @@ export default function App() {
   const { validPlaceCells, validDirections } = useValidMoves(game.gameState, game.uiPhase);
   const [showSetup, setShowSetup] = useState(true);
   const [reviewing, setReviewing] = useState(false);
+  const [confirmingResign, setConfirmingResign] = useState(false);
+
+  // Cancel resign confirmation automatically when a move is made
+  useEffect(() => {
+    setConfirmingResign(false);
+  }, [game.gameState.turnNumber]);
 
   const isThinking = game.uiPhase.phase === 'cpu-thinking';
 
@@ -77,6 +83,34 @@ export default function App() {
                 uiPhase={game.uiPhase}
                 onSelect={game.selectPieceType}
               />
+            )}
+          </div>
+        )}
+
+        {!reviewing && game.canResign && (
+          <div className={styles.resignArea}>
+            {confirmingResign ? (
+              <>
+                <button
+                  className={styles.confirmResignButton}
+                  onClick={() => {
+                    game.resign();
+                    setConfirmingResign(false);
+                  }}
+                >
+                  Confirm resign
+                </button>
+                <button
+                  className={styles.cancelResignButton}
+                  onClick={() => setConfirmingResign(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button className={styles.resignButton} onClick={() => setConfirmingResign(true)}>
+                Resign
+              </button>
             )}
           </div>
         )}
