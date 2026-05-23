@@ -9,6 +9,7 @@ import { Header } from './components/Header/Header';
 import { GameOverlay } from './components/GameOverlay/GameOverlay';
 import { GameSetup } from './components/GameSetup/GameSetup';
 import { MoveHistory } from './components/MoveHistory/MoveHistory';
+import { loadSavedGame, type SavedGame } from './utils/savedGame';
 import styles from './App.module.css';
 
 export default function App() {
@@ -17,6 +18,8 @@ export default function App() {
   const [showSetup, setShowSetup] = useState(true);
   const [reviewing, setReviewing] = useState(false);
   const [confirmingResign, setConfirmingResign] = useState(false);
+  // Read once at mount — cleared after the user acts on it (resume or new game).
+  const [savedGame, setSavedGame] = useState<SavedGame | null>(() => loadSavedGame());
 
   // Cancel resign confirmation automatically when a move is made
   useEffect(() => {
@@ -138,8 +141,18 @@ export default function App() {
 
       {showSetup && (
         <GameSetup
+          savedGame={savedGame}
+          onResume={() => {
+            if (savedGame) {
+              game.resumeGame(savedGame);
+              setSavedGame(null);
+              setReviewing(false);
+              setShowSetup(false);
+            }
+          }}
           onStart={(opts) => {
             game.startGame(opts);
+            setSavedGame(null);
             setReviewing(false);
             setShowSetup(false);
           }}

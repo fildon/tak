@@ -2,13 +2,31 @@ import { useState } from 'react';
 import { SUPPORTED_SIZES } from '@tak/shared';
 import type { StartGameOpts } from '../../hooks/useGameState';
 import type { AiDifficulty, CpuColor, GameMode } from '../../types/gameMode';
+import type { SavedGame } from '../../utils/savedGame';
 import styles from './GameSetup.module.css';
 
 interface Props {
   onStart: (opts: StartGameOpts) => void;
+  savedGame?: SavedGame | null;
+  onResume?: () => void;
 }
 
-export function GameSetup({ onStart }: Props) {
+function resumeMeta(saved: SavedGame): string {
+  const turn = Math.ceil(saved.gameState.turnNumber / 2);
+  const size = `${saved.gameState.size}×${saved.gameState.size}`;
+  const mode = saved.gameMode === 'pvp' ? 'Human vs Human' : 'vs CPU';
+  const diffMs = Date.now() - new Date(saved.savedAt).getTime();
+  const diffMin = Math.round(diffMs / 60_000);
+  const age =
+    diffMin < 1
+      ? 'just now'
+      : diffMin < 60
+        ? `${diffMin}m ago`
+        : `${Math.floor(diffMin / 60)}h ago`;
+  return `${size} · Turn ${turn} · ${mode} · ${age}`;
+}
+
+export function GameSetup({ onStart, savedGame, onResume }: Props) {
   const [mode, setMode] = useState<GameMode>('pvp');
   const [cpuColor, setCpuColor] = useState<CpuColor>('black');
   const [size, setSize] = useState(5);
@@ -22,6 +40,19 @@ export function GameSetup({ onStart }: Props) {
     <div className={styles.backdrop}>
       <div className={styles.card}>
         <h2 className={styles.title}>Tak</h2>
+
+        {savedGame && onResume && (
+          <>
+            <div className={styles.resumeSection}>
+              <div className={styles.label}>Saved game</div>
+              <div className={styles.resumeMeta}>{resumeMeta(savedGame)}</div>
+              <button className={styles.resumeBtn} onClick={onResume}>
+                Resume
+              </button>
+            </div>
+            <hr className={styles.divider} />
+          </>
+        )}
 
         <div className={styles.section}>
           <div className={styles.modeRow}>

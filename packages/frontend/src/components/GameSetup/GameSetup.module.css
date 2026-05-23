@@ -148,3 +148,39 @@
 .startBtn:hover {
   background: rgba(93, 158, 93, 0.36);
 }
+
+.resumeSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.resumeMeta {
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+}
+
+.resumeBtn {
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: rgba(93, 158, 93, 0.12);
+  color: var(--ui-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.1s;
+}
+
+.resumeBtn:hover {
+  background: rgba(93, 158, 93, 0.28);
+}
+
+.divider {
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--ui-border);
+  margin: 0;
+}
