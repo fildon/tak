@@ -37,3 +37,27 @@
   background: var(--piece-black);
   border-color: var(--piece-black-border);
 }
+
+/* ------------------------------------------------------------------ */
+/* Mini variant — fixed px dimensions for use outside container-type   */
+/* contexts (e.g. stack tooltip portal).                               */
+/* ------------------------------------------------------------------ */
+.mini {
+  flex-shrink: 0;
+}
+.mini.flat {
+  width: 14px;
+  height: 14px;
+  border-width: 1.5px;
+}
+.mini.wall {
+  width: 5px;
+  height: 14px;
+  border-width: 1.5px;
+}
+.mini.capstone {
+  width: 13px;
+  height: 13px;
+  border-width: 2.5px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+}

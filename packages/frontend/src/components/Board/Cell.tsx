@@ -1,5 +1,7 @@
+import { useRef, useState } from 'react';
 import type { Stack } from '@tak/shared';
 import { PieceGraphic } from '../Piece/PieceGraphic';
+import { StackTooltip } from './StackTooltip';
 import styles from './Cell.module.css';
 
 interface Props {
@@ -22,6 +24,8 @@ export function Cell({
   onClick,
 }: Props) {
   const top = stack.at(-1);
+  const cellRef = useRef<HTMLDivElement>(null);
+  const [tooltipAnchor, setTooltipAnchor] = useState<DOMRect | null>(null);
 
   const className = [
     styles.cell,
@@ -33,18 +37,33 @@ export function Cell({
     .filter(Boolean)
     .join(' ');
 
+  const handleMouseEnter = () => {
+    if (stack.length < 2) return;
+    const rect = cellRef.current?.getBoundingClientRect();
+    if (rect) setTooltipAnchor(rect);
+  };
+
+  const handleMouseLeave = () => setTooltipAnchor(null);
+
   return (
-    <div
-      className={className}
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
-    >
-      {top && <PieceGraphic piece={top} />}
-      {stack.length > 1 && (
-        <span className={styles.heightBadge}>{stack.length}</span>
-      )}
-    </div>
+    <>
+      <div
+        ref={cellRef}
+        className={className}
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {top && <PieceGraphic piece={top} />}
+        {stack.length > 1 && (
+          <span className={styles.heightBadge}>{stack.length}</span>
+        )}
+      </div>
+
+      <StackTooltip stack={stack} anchorRect={tooltipAnchor} />
+    </>
   );
 }
