@@ -2,6 +2,8 @@
 
 A web app for playing the board game [Tak](https://cheapass.com/tak/), built with a clean 2D aesthetic in the style of chess.com.
 
+**[▶ Play now →](https://rupertmckay.com/tak/)**
+
 ## Monorepo structure
 
 ```

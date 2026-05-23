@@ -78,3 +78,17 @@
   line-height: 1.4;
   opacity: 0.85;
 }
+
+.githubLink {
+  display: flex;
+  align-items: center;
+  color: var(--ui-text-dim);
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.githubLink:hover {
+  opacity: 1;
+}
