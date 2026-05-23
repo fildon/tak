@@ -37,9 +37,14 @@ export class ErrorBoundary extends Component<Props, State> {
         >
           <h2 style={{ margin: 0 }}>Something went wrong</h2>
           <p style={{ margin: 0, color: '#666' }}>
-            The game engine failed to load. Try refreshing — if the problem persists, check that
-            your browser supports WebAssembly.
+            An unexpected error occurred. Try refreshing the page.
           </p>
+          <details>
+            <summary>Error details</summary>
+            <pre style={{ margin: '8px 0 0', textAlign: 'left', whiteSpace: 'pre-wrap' }}>
+              {this.state.error.message}
+            </pre>
+          </details>
           <button
             onClick={() => window.location.reload()}
             style={{ marginTop: '8px', padding: '8px 20px', cursor: 'pointer' }}
