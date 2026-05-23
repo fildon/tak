@@ -20,9 +20,6 @@
   <rect width="1200" height="630" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.04"/>
 
   <!-- Left side: branding -->
-  <!-- Decorative flat piece icon -->
-  <rect x="80" y="90" width="72" height="72" rx="14" fill="#b58863"/>
-  <circle cx="116" cy="126" r="26" fill="#f0d0a0" stroke="#c4a882" stroke-width="3"/>
 
   <!-- Title -->
   <text x="80" y="240" font-family="Georgia, 'Times New Roman', serif" font-size="120" font-weight="bold" fill="#f0d0a0" letter-spacing="-4">Tak</text>
@@ -41,10 +38,6 @@
   <text x="237" y="460" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" fill="#c8a97a" text-anchor="middle" letter-spacing="0.5">rupertmckay.com/tak</text>
 
   <!-- Right side: 5x5 board -->
-  <!-- Board shadow -->
-  <rect x="626" y="90" width="480" height="480" rx="10" fill="#000000" fill-opacity="0.3"/>
-  <!-- Board background -->
-  <rect x="620" y="84" width="480" height="480" rx="10" fill="#a07840"/>
 
   <!-- Board cells: alternating light/dark, 5x5, each 90px, starting at x=626, y=90 -->
   <!-- Row 0 -->
@@ -78,17 +71,15 @@
   <rect x="896" y="450" width="90" height="90" fill="#a07840"/>
   <rect x="986" y="450" width="90" height="90" fill="#c8a97a"/>
 
-  <!-- Board border -->
-  <rect x="620" y="84" width="480" height="480" rx="10" fill="none" stroke="#7a5c30" stroke-width="3"/>
   <!-- Cell grid lines -->
-  <line x1="716" y1="90" x2="716" y2="564" stroke="#7a5c30" stroke-width="1"/>
-  <line x1="806" y1="90" x2="806" y2="564" stroke="#7a5c30" stroke-width="1"/>
-  <line x1="896" y1="90" x2="896" y2="564" stroke="#7a5c30" stroke-width="1"/>
-  <line x1="986" y1="90" x2="986" y2="564" stroke="#7a5c30" stroke-width="1"/>
-  <line x1="626" y1="180" x2="1100" y2="180" stroke="#7a5c30" stroke-width="1"/>
-  <line x1="626" y1="270" x2="1100" y2="270" stroke="#7a5c30" stroke-width="1"/>
-  <line x1="626" y1="360" x2="1100" y2="360" stroke="#7a5c30" stroke-width="1"/>
-  <line x1="626" y1="450" x2="1100" y2="450" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="716" y1="90" x2="716" y2="540" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="806" y1="90" x2="806" y2="540" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="896" y1="90" x2="896" y2="540" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="986" y1="90" x2="986" y2="540" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="626" y1="180" x2="1076" y2="180" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="626" y1="270" x2="1076" y2="270" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="626" y1="360" x2="1076" y2="360" stroke="#7a5c30" stroke-width="1"/>
+  <line x1="626" y1="450" x2="1076" y2="450" stroke="#7a5c30" stroke-width="1"/>
 
   <!-- Pieces on the board (mid-game position) -->
   <!-- White flat at (0,0) = x=626, y=90 -->
@@ -126,12 +117,4 @@
 
   <!-- Black flat at (3,4) = x=896, y=450 -->
   <rect x="914" y="468" width="54" height="54" rx="8" fill="#3d2b1f" stroke="#5a3d2a" stroke-width="2.5"/>
-
-  <!-- Stack of 2 at (4,3) = x=986, y=360 — black on top of white -->
-  <rect x="1004" y="374" width="54" height="54" rx="8" fill="#e8d5b0" stroke="#c4a882" stroke-width="2.5"/>
-  <rect x="1010" y="368" width="42" height="42" rx="6" fill="#3d2b1f" stroke="#5a3d2a" stroke-width="2"/>
-
-  <!-- Stack height badge -->
-  <circle cx="1060" cy="365" r="11" fill="#1a1a2e"/>
-  <text x="1060" y="369" font-family="-apple-system, sans-serif" font-size="12" font-weight="bold" fill="#f0d0a0" text-anchor="middle">2</text>
 </svg>
