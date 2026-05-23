@@ -5,3 +5,4 @@ pkg
 *.tsbuildinfo
 .env
 .env.local
+packages/frontend/public/preview.png
