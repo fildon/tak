@@ -26,13 +26,17 @@ export function GameSetup({ onStart }: Props) {
         <div className={styles.section}>
           <div className={styles.modeRow}>
             <button
-              className={[styles.modeBtn, mode === 'pvp' && styles.active].filter(Boolean).join(' ')}
+              className={[styles.modeBtn, mode === 'pvp' && styles.active]
+                .filter(Boolean)
+                .join(' ')}
               onClick={() => setMode('pvp')}
             >
               Human vs Human
             </button>
             <button
-              className={[styles.modeBtn, mode === 'pvc' && styles.active].filter(Boolean).join(' ')}
+              className={[styles.modeBtn, mode === 'pvc' && styles.active]
+                .filter(Boolean)
+                .join(' ')}
               onClick={() => setMode('pvc')}
             >
               Human vs CPU
@@ -74,7 +78,9 @@ export function GameSetup({ onStart }: Props) {
                 {DIFFICULTIES.map((d) => (
                   <button
                     key={d}
-                    className={[styles.sizeBtn, d === difficulty && styles.active].filter(Boolean).join(' ')}
+                    className={[styles.sizeBtn, d === difficulty && styles.active]
+                      .filter(Boolean)
+                      .join(' ')}
                     onClick={() => setDifficulty(d)}
                   >
                     {d.charAt(0).toUpperCase() + d.slice(1)}

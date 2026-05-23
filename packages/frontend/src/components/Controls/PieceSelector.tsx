@@ -36,21 +36,19 @@ export function PieceSelector({ gameState, uiPhase, onSelect }: Props) {
             onClick={() => onSelect(type)}
             disabled={disabled && !isSwapTurn}
             aria-pressed={isActive}
-            title={type === 'capstone' && player.capstoneCount === 0 ? 'No capstones remaining' : undefined}
+            title={
+              type === 'capstone' && player.capstoneCount === 0
+                ? 'No capstones remaining'
+                : undefined
+            }
           >
             {label}
-            {type === 'capstone' && (
-              <span className={styles.count}> ×{player.capstoneCount}</span>
-            )}
-            {type === 'flat' && (
-              <span className={styles.count}> ×{player.flatCount}</span>
-            )}
+            {type === 'capstone' && <span className={styles.count}> ×{player.capstoneCount}</span>}
+            {type === 'flat' && <span className={styles.count}> ×{player.flatCount}</span>}
           </button>
         );
       })}
-      {isSwapTurn && (
-        <span className={styles.hint}>Swap turn — place opponent's flat</span>
-      )}
+      {isSwapTurn && <span className={styles.hint}>Swap turn — place opponent's flat</span>}
     </div>
   );
 }

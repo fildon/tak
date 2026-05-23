@@ -41,8 +41,12 @@
   text-align: right;
 }
 
-.sum.valid  { color: var(--accent); }
-.sum.invalid { color: #c05050; }
+.sum.valid {
+  color: var(--accent);
+}
+.sum.invalid {
+  color: #c05050;
+}
 
 .stepsRow {
   display: flex;

@@ -15,9 +15,9 @@
 .dpad {
   display: grid;
   grid-template-areas:
-    ". up ."
-    "left center right"
-    ". down .";
+    '. up .'
+    'left center right'
+    '. down .';
   grid-template-columns: 44px 72px 44px;
   grid-template-rows: 44px 44px 44px;
   gap: 4px;
@@ -33,7 +33,10 @@
   border: 2px solid var(--ui-border);
   background: var(--ui-surface);
   color: #555;
-  transition: border-color 0.1s, color 0.1s, box-shadow 0.1s;
+  transition:
+    border-color 0.1s,
+    color 0.1s,
+    box-shadow 0.1s;
 }
 
 .dirBtn.valid {

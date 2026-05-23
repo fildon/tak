@@ -15,14 +15,7 @@ interface Props {
   onClick: () => void;
 }
 
-export function Cell({
-  stack,
-  isLight,
-  isSelected,
-  isValidPlace,
-  isOwnStack,
-  onClick,
-}: Props) {
+export function Cell({ stack, isLight, isSelected, isValidPlace, isOwnStack, onClick }: Props) {
   const top = stack.at(-1);
   const cellRef = useRef<HTMLDivElement>(null);
 

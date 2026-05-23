@@ -39,7 +39,10 @@ export function StackTooltip({ stack, anchorRect }: Props) {
       <ol className={styles.pieceList}>
         {/* Reverse so top piece is at the visual top of the list */}
         {[...stack].reverse().map((piece, i) => (
-          <li key={i} className={[styles.row, i === 0 ? styles.topRow : ''].filter(Boolean).join(' ')}>
+          <li
+            key={i}
+            className={[styles.row, i === 0 ? styles.topRow : ''].filter(Boolean).join(' ')}
+          >
             <PieceGraphic piece={piece} mini />
             <span className={styles.label}>
               {piece.color} {piece.type}

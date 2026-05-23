@@ -29,7 +29,9 @@ export function SlideControls({ uiPhase, validDirections, onCountChange, onDirec
           onClick={() => onCountChange(uiPhase.count - 1)}
           disabled={uiPhase.count <= 1}
           aria-label="Carry fewer pieces"
-        >−</button>
+        >
+          −
+        </button>
         <span
           className={styles.countVal}
           aria-label={`Carrying ${uiPhase.count} of ${uiPhase.maxCount}`}
@@ -41,7 +43,9 @@ export function SlideControls({ uiPhase, validDirections, onCountChange, onDirec
           onClick={() => onCountChange(uiPhase.count + 1)}
           disabled={uiPhase.count >= uiPhase.maxCount}
           aria-label="Carry more pieces"
-        >+</button>
+        >
+          +
+        </button>
         <span className={styles.carryMax}>of {uiPhase.maxCount}</span>
       </div>
 

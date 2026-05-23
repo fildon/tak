@@ -2,7 +2,10 @@ import type { UIPhase } from '../../types/uiState';
 import styles from './DistributeControls.module.css';
 
 const DIR_ARROW: Record<string, string> = {
-  '+': '↑', '-': '↓', '<': '←', '>': '→',
+  '+': '↑',
+  '-': '↓',
+  '<': '←',
+  '>': '→',
 };
 
 interface Props {
@@ -34,9 +37,7 @@ export function DistributeControls({
         <button className={styles.backBtn} onClick={onCancel}>
           ← Back
         </button>
-        <span className={styles.heading}>
-          Drop distribution {DIR_ARROW[direction]}
-        </span>
+        <span className={styles.heading}>Drop distribution {DIR_ARROW[direction]}</span>
         <span className={[styles.sum, isValid ? styles.valid : styles.invalid].join(' ')}>
           {sum}/{count}
         </span>
@@ -45,11 +46,9 @@ export function DistributeControls({
       <div className={styles.stepsRow}>
         {drops.map((d, i) => (
           <div key={i} className={styles.step}>
-            <button
-              className={styles.nudge}
-              onClick={() => onDropChange(i, d + 1)}
-              tabIndex={-1}
-            >▲</button>
+            <button className={styles.nudge} onClick={() => onDropChange(i, d + 1)} tabIndex={-1}>
+              ▲
+            </button>
             <input
               className={styles.input}
               type="number"
@@ -62,29 +61,35 @@ export function DistributeControls({
               onClick={() => onDropChange(i, d - 1)}
               disabled={d <= 1}
               tabIndex={-1}
-            >▼</button>
+            >
+              ▼
+            </button>
           </div>
         ))}
 
         <div className={styles.pathBtns}>
           {canAdd && (
-            <button className={styles.pathBtn} onClick={onAddStep} title="Extend path one more cell">
+            <button
+              className={styles.pathBtn}
+              onClick={onAddStep}
+              title="Extend path one more cell"
+            >
               +cell
             </button>
           )}
           {canRemove && (
-            <button className={styles.pathBtn} onClick={onRemoveStep} title="Shorten path by one cell">
+            <button
+              className={styles.pathBtn}
+              onClick={onRemoveStep}
+              title="Shorten path by one cell"
+            >
               −cell
             </button>
           )}
         </div>
       </div>
 
-      <button
-        className={styles.confirmBtn}
-        onClick={onConfirm}
-        disabled={!isValid}
-      >
+      <button className={styles.confirmBtn} onClick={onConfirm} disabled={!isValid}>
         Slide {DIR_ARROW[direction]}
       </button>
     </div>

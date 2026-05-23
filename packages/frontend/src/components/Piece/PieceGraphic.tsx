@@ -10,12 +10,7 @@ interface Props {
 export function PieceGraphic({ piece, mini }: Props) {
   return (
     <div
-      className={[
-        styles.piece,
-        styles[piece.type],
-        styles[piece.color],
-        mini ? styles.mini : '',
-      ]
+      className={[styles.piece, styles[piece.type], styles[piece.color], mini ? styles.mini : '']
         .filter(Boolean)
         .join(' ')}
       aria-label={`${piece.color} ${piece.type}`}

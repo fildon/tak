@@ -54,7 +54,9 @@
   background: var(--ui-surface);
   color: var(--ui-text);
   font-size: 0.9rem;
-  transition: border-color 0.1s, background 0.1s;
+  transition:
+    border-color 0.1s,
+    background 0.1s;
 }
 
 .modeBtn:hover {
@@ -91,8 +93,14 @@
   border: 2px solid var(--ui-border);
 }
 
-.white { background: var(--piece-white); border-color: var(--piece-white-border); }
-.black { background: var(--piece-black); border-color: var(--piece-black-border); }
+.white {
+  background: var(--piece-white);
+  border-color: var(--piece-white-border);
+}
+.black {
+  background: var(--piece-black);
+  border-color: var(--piece-black-border);
+}
 
 .sizeRow {
   display: flex;
@@ -111,7 +119,9 @@
   background: var(--ui-surface);
   color: var(--ui-text);
   font-size: 0.85rem;
-  transition: border-color 0.1s, background 0.1s;
+  transition:
+    border-color 0.1s,
+    background 0.1s;
 }
 
 .sizeBtn:hover {

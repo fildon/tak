@@ -300,9 +300,7 @@ function hasRoad(board: Board, size: number, color: Color): boolean {
   const topEdge = Array.from<unknown, [number, number]>({ length: size }, (_, c) => [0, c]);
   const leftEdge = Array.from<unknown, [number, number]>({ length: size }, (_, r) => [r, 0]);
 
-  return (
-    bfs(topEdge, (r) => r === size - 1) || bfs(leftEdge, (_, c) => c === size - 1)
-  );
+  return bfs(topEdge, (r) => r === size - 1) || bfs(leftEdge, (_, c) => c === size - 1);
 }
 
 function countFlats(board: Board, size: number, color: Color): number {

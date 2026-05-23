@@ -8,8 +8,12 @@
   transition: filter 0.08s;
 }
 
-.light { background-color: var(--cell-light); }
-.dark  { background-color: var(--cell-dark); }
+.light {
+  background-color: var(--cell-light);
+}
+.dark {
+  background-color: var(--cell-dark);
+}
 
 .ownStack {
   cursor: pointer;
@@ -49,7 +53,9 @@
 
   /* Visual */
   color: #fff;
-  text-shadow: 0 0 3px #000, 0 0 3px #000;
+  text-shadow:
+    0 0 3px #000,
+    0 0 3px #000;
   background: transparent;
   border: none;
   border-radius: 0;
@@ -62,5 +68,7 @@
 /* Show a subtle ring when the tooltip is pinned open. */
 .badgePinned {
   color: var(--cell-selected-ring);
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.9);
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.9),
+    0 0 4px rgba(0, 0, 0, 0.9);
 }

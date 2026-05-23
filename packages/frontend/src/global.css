@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -22,7 +24,10 @@
   --accent-glow: rgba(93, 158, 93, 0.5);
   --danger: #c0392b;
 
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: var(--ui-bg);
   color: var(--ui-text);
   line-height: 1.4;
