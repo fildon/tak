@@ -1,7 +1,7 @@
 .tooltip {
-  /* Portal element: fixed to viewport, centred on anchorRect via JS */
+  /* Portal element: fixed to viewport, centred on anchorRect via JS.
+     transform is set via inline style so it can flip above/below the cell. */
   position: fixed;
-  transform: translate(-50%, -100%);
   z-index: 200;
 
   background: var(--ui-surface);
@@ -27,11 +27,9 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, calc(-100% + 4px));
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -100%);
   }
 }
 
