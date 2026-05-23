@@ -27,12 +27,13 @@ export default function App() {
         gameState={game.gameState}
         gameMode={game.gameMode}
         cpuColor={game.cpuColor}
+        difficulty={game.difficulty}
       />
 
       <main className={styles.main}>
         <SizeSelector
           currentSize={game.gameState.size}
-          onSelect={(size) => game.startGame({ mode: game.gameMode, cpuColor: game.cpuColor, size })}
+          onSelect={(size) => game.startGame({ mode: game.gameMode, cpuColor: game.cpuColor, size, difficulty: game.difficulty })}
         />
 
         <Board

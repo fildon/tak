@@ -99,6 +99,11 @@
   gap: 6px;
 }
 
+.difficultyRow {
+  display: flex;
+  gap: 6px;
+}
+
 .sizeBtn {
   padding: 5px 12px;
   border-radius: 6px;

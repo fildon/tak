@@ -1,14 +1,15 @@
 import type { GameState } from '@tak/shared';
-import type { CpuColor, GameMode } from '../../types/gameMode';
+import type { AiDifficulty, CpuColor, GameMode } from '../../types/gameMode';
 import styles from './Header.module.css';
 
 interface Props {
   gameState: GameState;
   gameMode: GameMode;
   cpuColor: CpuColor;
+  difficulty: AiDifficulty;
 }
 
-export function Header({ gameState, gameMode, cpuColor }: Props) {
+export function Header({ gameState, gameMode, cpuColor, difficulty }: Props) {
   const { currentPlayer, players, turnNumber, result } = gameState;
   const isSwapTurn = turnNumber <= 2;
 
@@ -37,7 +38,9 @@ export function Header({ gameState, gameMode, cpuColor }: Props) {
             {players[color].flatCount}f
             {players[color].capstoneCount > 0 && ` ${players[color].capstoneCount}c`}
             {gameMode === 'pvc' && color === cpuColor && (
-              <span className={styles.cpuBadge}>CPU</span>
+              <span className={styles.cpuBadge}>
+                CPU · {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+              </span>
             )}
           </span>
         ))}

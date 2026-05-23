@@ -6,7 +6,8 @@ import {
 } from '@tak/shared';
 import type { Color, Direction, GameState, Move, PieceType, PlaceMove, SlideMove } from '@tak/shared';
 import type { UIPhase } from '../types/uiState';
-import type { CpuColor, GameMode } from '../types/gameMode';
+import type { AiDifficulty, CpuColor, GameMode } from '../types/gameMode';
+import { AI_DIFFICULTY_MS } from '../types/gameMode';
 import { computeDrops } from '../utils/moves';
 import { getCpuMove } from '../cpu/getCpuMove';
 
@@ -27,6 +28,7 @@ export interface StartGameOpts {
   mode: GameMode;
   cpuColor: CpuColor;
   size: number;
+  difficulty: AiDifficulty;
 }
 
 export interface UseGameStateReturn {
@@ -34,6 +36,7 @@ export interface UseGameStateReturn {
   uiPhase: UIPhase;
   gameMode: GameMode;
   cpuColor: CpuColor;
+  difficulty: AiDifficulty;
   selectPieceType: (pt: PieceType) => void;
   selectStack: (row: number, col: number) => void;
   setSlideCount: (n: number) => void;
@@ -52,6 +55,7 @@ export function useGameState(): UseGameStateReturn {
   const [uiPhase, setUiPhase] = useState<UIPhase>({ phase: 'idle' });
   const [gameMode, setGameMode] = useState<GameMode>('pvp');
   const [cpuColor, setCpuColor] = useState<CpuColor>('black');
+  const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
 
   // Auto-enter placing mode on swap turns (turns 1 & 2)
   useEffect(() => {
@@ -69,7 +73,7 @@ export function useGameState(): UseGameStateReturn {
     setUiPhase({ phase: 'cpu-thinking' });
     let cancelled = false;
 
-    getCpuMove(gameState)
+    getCpuMove(gameState, AI_DIFFICULTY_MS[difficulty])
       .then((move) => {
         if (!cancelled) {
           dispatch({ type: 'APPLY_MOVE', move });
@@ -82,7 +86,7 @@ export function useGameState(): UseGameStateReturn {
       });
 
     return () => { cancelled = true; };
-  }, [gameState, gameMode, cpuColor]);
+  }, [gameState, gameMode, cpuColor, difficulty]);
 
   const selectPieceType = (pt: PieceType) => {
     if (uiPhase.phase === 'cpu-thinking') return;
@@ -172,6 +176,7 @@ export function useGameState(): UseGameStateReturn {
   const startGame = (opts: StartGameOpts) => {
     setGameMode(opts.mode);
     setCpuColor(opts.cpuColor);
+    setDifficulty(opts.difficulty);
     dispatch({ type: 'NEW_GAME', size: opts.size });
     // Every new game starts at turnNumber 1 (swap turn). Set placing directly
     // rather than relying on the swap-turn effect, which only fires when
@@ -196,6 +201,7 @@ export function useGameState(): UseGameStateReturn {
     uiPhase,
     gameMode,
     cpuColor,
+    difficulty,
     selectPieceType,
     selectStack,
     setSlideCount,
