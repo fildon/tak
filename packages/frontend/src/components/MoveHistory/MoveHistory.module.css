@@ -2,9 +2,21 @@
   width: 100%;
 }
 
+.header {
+  display: flex;
+  gap: 8px;
+}
+
+.toggleSide {
+  flex: 1;
+  display: flex;
+}
+
 .toggle {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   background: none;
   border: 1px solid var(--ui-border);
@@ -22,6 +34,15 @@
 
 .chevron {
   font-size: 0.65em;
+}
+
+.rightSlot {
+  flex: 1;
+  display: flex;
+}
+
+.rightSlot > * {
+  flex: 1;
 }
 
 .list {
