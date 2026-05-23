@@ -33,13 +33,34 @@
 }
 
 .heightBadge {
+  /* Layout */
   position: absolute;
-  bottom: 2px;
-  right: 4px;
+  bottom: 0;
+  right: 0;
+
+  /* Sizing: visible text is small but the touch target extends to the corner */
   font-size: clamp(0.5rem, 1.8cqw, 0.75rem);
   font-weight: 700;
+  line-height: 1;
+
+  /* Extend the tap/click area without growing the visible badge.
+     44 × 44 px is the recommended minimum touch target (Apple HIG / WCAG). */
+  padding: 10px 8px 4px 10px;
+
+  /* Visual */
   color: #fff;
   text-shadow: 0 0 3px #000, 0 0 3px #000;
-  line-height: 1;
-  pointer-events: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+
+  /* Let pointer events through by default so hover still triggers. */
+  pointer-events: auto;
+}
+
+/* Show a subtle ring when the tooltip is pinned open. */
+.badgePinned {
+  color: var(--cell-selected-ring);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.9);
 }
