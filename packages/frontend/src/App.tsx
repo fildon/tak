@@ -5,7 +5,6 @@ import { Board } from './components/Board/Board';
 import { PieceSelector } from './components/Controls/PieceSelector';
 import { SlideControls } from './components/Controls/SlideControls';
 import { DistributeControls } from './components/Controls/DistributeControls';
-import { SizeSelector } from './components/Controls/SizeSelector';
 import { Header } from './components/Header/Header';
 import { GameOverlay } from './components/GameOverlay/GameOverlay';
 import { GameSetup } from './components/GameSetup/GameSetup';
@@ -36,20 +35,6 @@ export default function App() {
       />
 
       <main className={styles.main}>
-        {!reviewing && (
-          <SizeSelector
-            currentSize={game.gameState.size}
-            onSelect={(size) =>
-              game.startGame({
-                mode: game.gameMode,
-                cpuColor: game.cpuColor,
-                size,
-                difficulty: game.difficulty,
-              })
-            }
-          />
-        )}
-
         <Board
           gameState={game.gameState}
           uiPhase={game.uiPhase}
