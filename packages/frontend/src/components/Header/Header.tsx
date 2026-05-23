@@ -22,7 +22,15 @@ export function Header({ gameState, gameMode, cpuColor, difficulty }: Props) {
           <span className={[styles.swatch, styles[currentPlayer]].join(' ')} aria-hidden="true" />
           <span>
             {currentPlayer === 'white' ? 'White' : 'Black'} to move
-            {isSwapTurn && <span className={styles.swap}> (swap)</span>}
+            {isSwapTurn && (
+              <span className={styles.swapBadge} tabIndex={0}>
+                {' (swap)'}
+                <span className={styles.swapTooltip} role="tooltip">
+                  Place your <strong>opponent's</strong> stone. The swap rule lets the second player
+                  choose to swap colours after the first move, keeping the opening fair.
+                </span>
+              </span>
+            )}
           </span>
           <span className={styles.turnNum}>Turn {Math.ceil(turnNumber / 2)}</span>
         </div>

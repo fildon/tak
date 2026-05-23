@@ -48,9 +48,42 @@
   background: var(--piece-black);
 }
 
-.swap {
+.swapBadge {
+  position: relative;
   color: var(--ui-text-dim);
   font-size: 0.8em;
+  cursor: help;
+  border-bottom: 1px dotted var(--ui-text-dim);
+  outline: none;
+}
+
+.swapBadge:hover .swapTooltip,
+.swapBadge:focus .swapTooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.swapTooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  color: var(--ui-text);
+  line-height: 1.5;
+  text-align: left;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+  z-index: 50;
+  white-space: normal;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .turnNum {
