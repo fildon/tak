@@ -47,20 +47,34 @@
   background: rgba(93, 158, 93, 0.15);
 }
 
-.countWrap {
+.carryRow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.carryLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ui-text-dim);
+  margin-right: 2px;
+}
+
+.carryMax {
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+  margin-left: 2px;
 }
 
 .nudge {
-  width: 26px;
-  height: 26px;
-  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
   color: var(--ui-text);
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1;
 }
 
@@ -68,9 +82,18 @@
   border-color: var(--accent);
 }
 
+.nudge:disabled {
+  opacity: 0.35;
+}
+
 .countVal {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   min-width: 1.5ch;
   text-align: center;
+}
+
+.dpadCenter {
+  width: 44px;
+  height: 44px;
 }

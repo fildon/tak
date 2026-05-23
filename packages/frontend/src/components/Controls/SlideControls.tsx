@@ -21,6 +21,30 @@ export function SlideControls({ uiPhase, validDirections, onCountChange, onDirec
   return (
     <div className={styles.wrapper}>
       <span className={styles.label}>Slide</span>
+
+      <div className={styles.carryRow}>
+        <span className={styles.carryLabel}>Carry</span>
+        <button
+          className={styles.nudge}
+          onClick={() => onCountChange(uiPhase.count - 1)}
+          disabled={uiPhase.count <= 1}
+          aria-label="Carry fewer pieces"
+        >−</button>
+        <span
+          className={styles.countVal}
+          aria-label={`Carrying ${uiPhase.count} of ${uiPhase.maxCount} pieces`}
+        >
+          {uiPhase.count}
+        </span>
+        <button
+          className={styles.nudge}
+          onClick={() => onCountChange(uiPhase.count + 1)}
+          disabled={uiPhase.count >= uiPhase.maxCount}
+          aria-label="Carry more pieces"
+        >+</button>
+        <span className={styles.carryMax}>of {uiPhase.maxCount}</span>
+      </div>
+
       <div className={styles.dpad}>
         {ARROW_MAP.map(({ dir, label, area }) => {
           const valid = validDirections.has(dir);
@@ -37,20 +61,7 @@ export function SlideControls({ uiPhase, validDirections, onCountChange, onDirec
             </button>
           );
         })}
-
-        <div className={styles.countWrap} style={{ gridArea: 'center' }}>
-          <button
-            className={styles.nudge}
-            onClick={() => onCountChange(uiPhase.count - 1)}
-            disabled={uiPhase.count <= 1}
-          >−</button>
-          <span className={styles.countVal}>{uiPhase.count}</span>
-          <button
-            className={styles.nudge}
-            onClick={() => onCountChange(uiPhase.count + 1)}
-            disabled={uiPhase.count >= uiPhase.maxCount}
-          >+</button>
-        </div>
+        <div className={styles.dpadCenter} style={{ gridArea: 'center' }} aria-hidden="true" />
       </div>
     </div>
   );
