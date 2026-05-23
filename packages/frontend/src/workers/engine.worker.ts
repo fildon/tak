@@ -18,7 +18,7 @@ import init, { get_best_move } from '@tak/engine';
 
 // Initialise the wasm module once, then signal readiness.
 // All incoming messages are queued until init resolves.
-let wasmReady: Promise<void> = init().then(() => undefined);
+const wasmReady: Promise<void> = init().then(() => undefined);
 
 self.onmessage = async (e: MessageEvent) => {
   const { id, stateJson, timeBudgetMs } = e.data as {

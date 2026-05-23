@@ -29,11 +29,7 @@ export function computeDrops(
     const nr = r + dr;
     const nc = c + dc;
     const hasNext =
-      nr >= 0 &&
-      nr < size &&
-      nc >= 0 &&
-      nc < size &&
-      board[nr][nc].at(-1)?.type !== 'capstone';
+      nr >= 0 && nr < size && nc >= 0 && nc < size && board[nr][nc].at(-1)?.type !== 'capstone';
 
     // Must stop here: hit a wall, nowhere to continue, or only 1 piece left
     const mustStop = top?.type === 'wall' || !hasNext || remaining === 1;

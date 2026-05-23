@@ -1,0 +1,5 @@
+dist/
+pkg/
+node_modules/
+packages/engine/
+*.wasm

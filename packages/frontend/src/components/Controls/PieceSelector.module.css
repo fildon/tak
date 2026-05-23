@@ -14,7 +14,9 @@
   color: var(--ui-text);
   font-size: 0.9rem;
   font-weight: 600;
-  transition: border-color 0.1s, background 0.1s;
+  transition:
+    border-color 0.1s,
+    background 0.1s;
 }
 
 .btn:hover:not(:disabled) {

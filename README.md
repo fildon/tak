@@ -16,12 +16,12 @@ tak/
 
 ## Tech stack
 
-| Layer | Tech |
-|---|---|
-| Frontend | React 18, TypeScript, Vite 5 |
-| AI engine | Rust → WebAssembly (wasm-pack) |
+| Layer        | Tech                                        |
+| ------------ | ------------------------------------------- |
+| Frontend     | React 18, TypeScript, Vite 5                |
+| AI engine    | Rust → WebAssembly (wasm-pack)              |
 | Shared logic | TypeScript (CommonJS, consumed by frontend) |
-| Monorepo | npm workspaces + Turborepo |
+| Monorepo     | npm workspaces + Turborepo                  |
 
 ## Architecture
 
@@ -37,6 +37,7 @@ React UI  ──postMessage──►  engine.worker.ts  ──Wasm call──►
 The Rust crate has no Wasm-specific code beyond `lib.rs` (the `#[wasm_bindgen]` entry point) and `js_sys::Date::now()` for timing. The same source compiles to a native binary if a CLI or server-side use case ever arises.
 
 **Why Wasm is sufficient here:**
+
 - Zero deployment cost — the `.wasm` file is a static asset served by Vite alongside the JS bundle
 - No backend required for single-player (PvC) — the whole app deploys to Vercel as a static site
 - No cold-start latency — the engine initialises once per page load and stays resident
@@ -77,15 +78,18 @@ cargo install wasm-pack
 Tak is a two-player abstract strategy game. Each player tries to build a **road** — a connected path of their pieces linking opposite edges of the board.
 
 **Pieces:**
+
 - **Flat stone** — the basic piece; counts toward roads and the flat-stone tiebreaker
 - **Standing stone (wall)** — blocks movement and roads; cannot be part of a road
 - **Capstone** — counts toward roads; can flatten walls by moving onto them
 
 **Turn structure:**
-- **Turns 1 & 2 (swap):** each player places one of the *opponent's* flat stones
+
+- **Turns 1 & 2 (swap):** each player places one of the _opponent's_ flat stones
 - **Turn 3 onwards:** place a piece from your hand onto an empty square, or pick up a stack and slide it in a straight line
 
 **Win conditions:**
+
 1. **Road win** — connect two opposite edges with a continuous path of flats and/or capstones
 2. **Flat win** — when the board fills or a player runs out of pieces, the player with the most flat stones on top of stacks wins
 3. **Draw** — if flat counts are equal at game end, the game is a draw

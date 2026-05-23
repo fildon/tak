@@ -13,10 +13,7 @@ import styles from './App.module.css';
 
 export default function App() {
   const game = useGameState();
-  const { validPlaceCells, validDirections } = useValidMoves(
-    game.gameState,
-    game.uiPhase,
-  );
+  const { validPlaceCells, validDirections } = useValidMoves(game.gameState, game.uiPhase);
   const [showSetup, setShowSetup] = useState(true);
 
   const isThinking = game.uiPhase.phase === 'cpu-thinking';
@@ -33,7 +30,14 @@ export default function App() {
       <main className={styles.main}>
         <SizeSelector
           currentSize={game.gameState.size}
-          onSelect={(size) => game.startGame({ mode: game.gameMode, cpuColor: game.cpuColor, size, difficulty: game.difficulty })}
+          onSelect={(size) =>
+            game.startGame({
+              mode: game.gameMode,
+              cpuColor: game.cpuColor,
+              size,
+              difficulty: game.difficulty,
+            })
+          }
         />
 
         <Board
@@ -73,10 +77,7 @@ export default function App() {
       </main>
 
       {game.gameState.result && (
-        <GameOverlay
-          result={game.gameState.result}
-          onPlayAgain={() => setShowSetup(true)}
-        />
+        <GameOverlay result={game.gameState.result} onPlayAgain={() => setShowSetup(true)} />
       )}
 
       {showSetup && (

@@ -28,9 +28,15 @@
   border: 4px solid var(--ui-border);
   margin-bottom: 4px;
 }
-.white { background: var(--piece-white); border-color: var(--piece-white-border); }
-.black { background: var(--piece-black); border-color: var(--piece-black-border); }
-.draw  {
+.white {
+  background: var(--piece-white);
+  border-color: var(--piece-white-border);
+}
+.black {
+  background: var(--piece-black);
+  border-color: var(--piece-black-border);
+}
+.draw {
   /* Half-and-half split to represent neither player */
   background: linear-gradient(135deg, var(--piece-white) 50%, var(--piece-black) 50%);
   border-color: var(--ui-border);

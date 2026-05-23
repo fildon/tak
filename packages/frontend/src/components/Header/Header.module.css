@@ -41,8 +41,12 @@
   border: 1px solid var(--ui-border);
 }
 
-.white { background: var(--piece-white); }
-.black { background: var(--piece-black); }
+.white {
+  background: var(--piece-white);
+}
+.black {
+  background: var(--piece-black);
+}
 
 .swap {
   color: var(--ui-text-dim);

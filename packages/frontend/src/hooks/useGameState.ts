@@ -1,19 +1,13 @@
 import { useEffect, useReducer, useState } from 'react';
-import {
-  applyMove,
-  createGame,
-  validateMove,
-} from '@tak/shared';
-import type { Color, Direction, GameState, Move, PieceType, PlaceMove, SlideMove } from '@tak/shared';
+import { applyMove, createGame, validateMove } from '@tak/shared';
+import type { Direction, GameState, Move, PieceType, PlaceMove, SlideMove } from '@tak/shared';
 import type { UIPhase } from '../types/uiState';
 import type { AiDifficulty, CpuColor, GameMode } from '../types/gameMode';
 import { AI_DIFFICULTY_MS } from '../types/gameMode';
 import { computeDrops } from '../utils/moves';
 import { getCpuMove } from '../cpu/getCpuMove';
 
-type GameAction =
-  | { type: 'APPLY_MOVE'; move: Move }
-  | { type: 'NEW_GAME'; size: number };
+type GameAction = { type: 'APPLY_MOVE'; move: Move } | { type: 'NEW_GAME'; size: number };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -85,7 +79,9 @@ export function useGameState(): UseGameStateReturn {
         if (!cancelled) setUiPhase({ phase: 'idle' });
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [gameState, gameMode, cpuColor, difficulty]);
 
   const selectPieceType = (pt: PieceType) => {
@@ -131,7 +127,15 @@ export function useGameState(): UseGameStateReturn {
     const { row, col, count } = uiPhase;
     const drops = computeDrops(gameState.board, gameState.size, row, col, dir, count);
     if (drops.length === 0) return;
-    setUiPhase({ phase: 'distributing', row, col, count, direction: dir, drops, maxSteps: drops.length });
+    setUiPhase({
+      phase: 'distributing',
+      row,
+      col,
+      count,
+      direction: dir,
+      drops,
+      maxSteps: drops.length,
+    });
   };
 
   const setDropAt = (index: number, value: number) => {

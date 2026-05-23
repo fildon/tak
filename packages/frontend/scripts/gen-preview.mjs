@@ -14,9 +14,6 @@ const pngPath = join(__dirname, '../public/preview.png');
 
 const svg = readFileSync(svgPath);
 
-await sharp(svg, { density: 150 })
-  .resize(1200, 630)
-  .png({ compressionLevel: 8 })
-  .toFile(pngPath);
+await sharp(svg, { density: 150 }).resize(1200, 630).png({ compressionLevel: 8 }).toFile(pngPath);
 
 console.log('✓ Generated public/preview.png');
