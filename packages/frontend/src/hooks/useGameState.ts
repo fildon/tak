@@ -14,6 +14,7 @@ import type { AiDifficulty, CpuColor, GameMode } from '../types/gameMode';
 import { AI_DIFFICULTY_MS } from '../types/gameMode';
 import { computeDrops } from '../utils/moves';
 import { getCpuMove } from '../cpu/getCpuMove';
+import { clearSavedGame, saveGame, type SavedGame } from '../utils/savedGame';
 
 interface ReducerState {
   current: GameState;
@@ -24,7 +25,8 @@ type GameAction =
   | { type: 'APPLY_MOVE'; move: Move }
   | { type: 'NEW_GAME'; size: number }
   | { type: 'UNDO'; steps: number }
-  | { type: 'RESIGN' };
+  | { type: 'RESIGN' }
+  | { type: 'RESTORE'; gameState: GameState };
 
 function gameReducer(state: ReducerState, action: GameAction): ReducerState {
   switch (action.type) {
@@ -53,6 +55,8 @@ function gameReducer(state: ReducerState, action: GameAction): ReducerState {
         current: { ...state.current, result: { winner: opponent, reason: 'resign' } },
       };
     }
+    case 'RESTORE':
+      return { past: [], current: action.gameState };
   }
 }
 
@@ -84,6 +88,7 @@ export interface UseGameStateReturn {
   cancelSelection: () => void;
   undo: () => void;
   resign: () => void;
+  resumeGame: (saved: SavedGame) => void;
 }
 
 export function useGameState(): UseGameStateReturn {
@@ -134,6 +139,18 @@ export function useGameState(): UseGameStateReturn {
     return () => {
       cancelled = true;
     };
+  }, [gameState, gameMode, cpuColor, difficulty]);
+
+  // Auto-save on every move; clear when the game ends.
+  // Does nothing when no moves have been made yet (preserves any existing save
+  // from a previous session that hasn't been acted on yet).
+  useEffect(() => {
+    if (gameState.result !== null) {
+      clearSavedGame();
+      return;
+    }
+    if (gameState.moveHistory.length === 0) return;
+    saveGame({ gameState, gameMode, cpuColor, difficulty, savedAt: new Date().toISOString() });
   }, [gameState, gameMode, cpuColor, difficulty]);
 
   const selectPieceType = (pt: PieceType) => {
@@ -230,6 +247,7 @@ export function useGameState(): UseGameStateReturn {
   };
 
   const startGame = (opts: StartGameOpts) => {
+    clearSavedGame(); // discard any save from the previous session
     setGameMode(opts.mode);
     setCpuColor(opts.cpuColor);
     setDifficulty(opts.difficulty);
@@ -238,6 +256,19 @@ export function useGameState(): UseGameStateReturn {
     // rather than relying on the swap-turn effect, which only fires when
     // turnNumber *changes* — it stays at 1 if no moves were made before reset.
     setUiPhase({ phase: 'placing', pieceType: 'flat' });
+  };
+
+  const resumeGame = (saved: SavedGame) => {
+    setGameMode(saved.gameMode);
+    setCpuColor(saved.cpuColor);
+    setDifficulty(saved.difficulty);
+    dispatch({ type: 'RESTORE', gameState: saved.gameState });
+    // Restore the correct UI phase for the saved turn.
+    if (saved.gameState.turnNumber <= 2) {
+      setUiPhase({ phase: 'placing', pieceType: 'flat' });
+    } else {
+      setUiPhase({ phase: 'idle' });
+    }
   };
 
   // Cancel distributing → return to sliding so the user can pick a different direction.
@@ -287,5 +318,6 @@ export function useGameState(): UseGameStateReturn {
     cancelSelection,
     undo,
     resign,
+    resumeGame,
   };
 }
