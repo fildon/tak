@@ -9,6 +9,7 @@ import { SizeSelector } from './components/Controls/SizeSelector';
 import { Header } from './components/Header/Header';
 import { GameOverlay } from './components/GameOverlay/GameOverlay';
 import { GameSetup } from './components/GameSetup/GameSetup';
+import { MoveHistory } from './components/MoveHistory/MoveHistory';
 import styles from './App.module.css';
 
 export default function App() {
@@ -74,6 +75,19 @@ export default function App() {
             />
           )}
         </div>
+
+        <div className={styles.actions}>
+          <button
+            className={styles.undoButton}
+            onClick={game.undo}
+            disabled={!game.canUndo}
+            aria-label="Undo last move"
+          >
+            ↩ Undo
+          </button>
+        </div>
+
+        <MoveHistory moves={game.gameState.moveHistory} size={game.gameState.size} />
       </main>
 
       {game.gameState.result && (

@@ -7,14 +7,36 @@ import { AI_DIFFICULTY_MS } from '../types/gameMode';
 import { computeDrops } from '../utils/moves';
 import { getCpuMove } from '../cpu/getCpuMove';
 
-type GameAction = { type: 'APPLY_MOVE'; move: Move } | { type: 'NEW_GAME'; size: number };
+interface ReducerState {
+  current: GameState;
+  past: GameState[]; // stack; last entry = most recent previous state
+}
 
-function gameReducer(state: GameState, action: GameAction): GameState {
+type GameAction =
+  | { type: 'APPLY_MOVE'; move: Move }
+  | { type: 'NEW_GAME'; size: number }
+  | { type: 'UNDO'; steps: number };
+
+function gameReducer(state: ReducerState, action: GameAction): ReducerState {
   switch (action.type) {
     case 'APPLY_MOVE':
-      return applyMove(state, action.move);
+      return {
+        past: [...state.past, state.current],
+        current: applyMove(state.current, action.move),
+      };
     case 'NEW_GAME':
-      return createGame(action.size);
+      return {
+        past: [],
+        current: createGame(action.size),
+      };
+    case 'UNDO': {
+      const steps = Math.min(action.steps, state.past.length);
+      if (steps === 0) return state;
+      return {
+        past: state.past.slice(0, state.past.length - steps),
+        current: state.past[state.past.length - steps],
+      };
+    }
   }
 }
 
@@ -31,6 +53,7 @@ export interface UseGameStateReturn {
   gameMode: GameMode;
   cpuColor: CpuColor;
   difficulty: AiDifficulty;
+  canUndo: boolean;
   selectPieceType: (pt: PieceType) => void;
   selectStack: (row: number, col: number) => void;
   setSlideCount: (n: number) => void;
@@ -42,14 +65,22 @@ export interface UseGameStateReturn {
   confirmSlide: () => void;
   startGame: (opts: StartGameOpts) => void;
   cancelSelection: () => void;
+  undo: () => void;
 }
 
 export function useGameState(): UseGameStateReturn {
-  const [gameState, dispatch] = useReducer(gameReducer, undefined, () => createGame(5));
+  const [reducerState, dispatch] = useReducer(gameReducer, undefined, () => ({
+    current: createGame(5),
+    past: [],
+  }));
   const [uiPhase, setUiPhase] = useState<UIPhase>({ phase: 'idle' });
   const [gameMode, setGameMode] = useState<GameMode>('pvp');
   const [cpuColor, setCpuColor] = useState<CpuColor>('black');
   const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
+
+  const gameState = reducerState.current;
+
+  const canUndo = reducerState.past.length > 0 && uiPhase.phase !== 'cpu-thinking';
 
   // Auto-enter placing mode on swap turns (turns 1 & 2)
   useEffect(() => {
@@ -200,12 +231,21 @@ export function useGameState(): UseGameStateReturn {
     }
   };
 
+  const undo = () => {
+    if (!canUndo) return;
+    // In PvC mode step back 2 moves so the human is back in control.
+    const steps = gameMode === 'pvc' && reducerState.past.length >= 2 ? 2 : 1;
+    dispatch({ type: 'UNDO', steps });
+    setUiPhase({ phase: 'idle' });
+  };
+
   return {
     gameState,
     uiPhase,
     gameMode,
     cpuColor,
     difficulty,
+    canUndo,
     selectPieceType,
     selectStack,
     setSlideCount,
@@ -217,5 +257,6 @@ export function useGameState(): UseGameStateReturn {
     confirmSlide,
     startGame,
     cancelSelection,
+    undo,
   };
 }

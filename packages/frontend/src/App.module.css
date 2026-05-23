@@ -28,3 +28,29 @@
   opacity: 0.7;
   transition: opacity 0.15s;
 }
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.undoButton {
+  background: none;
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.undoButton:hover:not(:disabled) {
+  color: var(--ui-text);
+}
+
+.undoButton:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
