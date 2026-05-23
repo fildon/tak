@@ -239,8 +239,8 @@ function checkWin(state: GameState): GameState {
     const wf = countFlats(board, size, 'white');
     const bf = countFlats(board, size, 'black');
     if (wf === bf) {
-      // Tie in flats: the player who did NOT trigger the end wins
-      return withResult(state, { winner: opponent(currentPlayer), reason: 'flats' });
+      // Official rules: equal flat count at game end is a draw.
+      return withResult(state, { winner: null, reason: 'draw' });
     }
     return withResult(state, { winner: wf > bf ? 'white' : 'black', reason: 'flats' });
   }

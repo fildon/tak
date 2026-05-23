@@ -41,8 +41,12 @@ export interface SlideMove {
 export type Move = PlaceMove | SlideMove;
 
 export interface GameResult {
-  winner: Color;
-  reason: 'road' | 'flats' | 'resign';
+  /**
+   * The winning player, or `null` when the game ends in a draw
+   * (equal flat counts at board-full / piece-exhaustion).
+   */
+  winner: Color | null;
+  reason: 'road' | 'flats' | 'draw' | 'resign';
 }
 
 export interface GameState {

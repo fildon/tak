@@ -117,7 +117,7 @@ fn check_win(state: &mut GameState) {
         } else {
             Color::Black
         };
-        state.result = Some(GameResult { winner, reason: "road".into() });
+        state.result = Some(GameResult { winner: Some(winner), reason: "road".into() });
         return;
     }
 
@@ -129,15 +129,13 @@ fn check_win(state: &mut GameState) {
     if board_full || white_out || black_out {
         let wf = count_flats(&state.board, state.size, Color::White);
         let bf = count_flats(&state.board, state.size, Color::Black);
-        let winner = if wf == bf {
-            // Tie in flats: the player who did NOT trigger the end wins.
-            state.current_player.opponent()
-        } else if wf > bf {
-            Color::White
+        if wf == bf {
+            // Official rules: equal flat count at game end is a draw.
+            state.result = Some(GameResult { winner: None, reason: "draw".into() });
         } else {
-            Color::Black
-        };
-        state.result = Some(GameResult { winner, reason: "flats".into() });
+            let winner = if wf > bf { Color::White } else { Color::Black };
+            state.result = Some(GameResult { winner: Some(winner), reason: "flats".into() });
+        }
     }
 }
 

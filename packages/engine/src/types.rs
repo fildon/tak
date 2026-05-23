@@ -136,7 +136,8 @@ pub struct Players {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GameResult {
-    pub winner: Color,
+    /// `None` serialises as JSON `null` — a draw (equal flat counts).
+    pub winner: Option<Color>,
     pub reason: String,
 }
 

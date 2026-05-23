@@ -103,13 +103,13 @@ fn search_root(
         .iter()
         .map(|mv| {
             let next = apply_move(state, mv);
-            let s = if next.result.is_some() {
-                // Terminal: winning for us or losing? apply always advances turn,
-                // so check winner vs. our colour.
-                if next.result.as_ref().unwrap().winner == state.current_player {
-                    SCORE_WIN
-                } else {
-                    -SCORE_WIN
+            let s = if let Some(ref r) = next.result {
+                // Terminal: winning for us, losing, or draw?
+                // apply always advances turn, so compare winner vs. our colour.
+                match r.winner {
+                    Some(w) if w == state.current_player => SCORE_WIN,
+                    None => 0, // draw
+                    _ => -SCORE_WIN,
                 }
             } else {
                 -evaluate(&next) // negate: eval from next.current_player = opponent
@@ -153,12 +153,10 @@ fn negamax(
 ) -> i32 {
     // Terminal position check.
     if let Some(result) = &state.result {
-        // current_player is the loser (for road wins, or for the flat-count
-        // case where the triggerer lost).  Compare winner explicitly.
-        return if result.winner == state.current_player {
-            SCORE_WIN // current_player is actually the winner (flat-trigger edge case)
-        } else {
-            -SCORE_WIN
+        return match result.winner {
+            Some(w) if w == state.current_player => SCORE_WIN,
+            None => 0, // draw — neutral for both sides
+            _ => -SCORE_WIN,
         };
     }
 
@@ -184,7 +182,11 @@ fn negamax(
         .map(|mv| {
             let next = apply_move(state, &mv);
             let s = if let Some(ref r) = next.result {
-                if r.winner == state.current_player { SCORE_WIN } else { -SCORE_WIN }
+                match r.winner {
+                    Some(w) if w == state.current_player => SCORE_WIN,
+                    None => 0,
+                    _ => -SCORE_WIN,
+                }
             } else {
                 -evaluate(&next)
             };
@@ -194,8 +196,8 @@ fn negamax(
     scored.sort_unstable_by(|a, b| b.0.cmp(&a.0));
 
     for (prescore, mv) in scored {
-        // If this move is already known to be a win, take it immediately.
-        if prescore >= SCORE_WIN {
+        // If this move is already known to be a forced win, take it immediately.
+        if prescore >= SCORE_WIN / 2 {
             return SCORE_WIN;
         }
 
