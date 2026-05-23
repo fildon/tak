@@ -1,0 +1,18 @@
+# Netlify build configuration.
+# Covers both production deploys and PR preview builds.
+#
+# VITE_BASE_PATH is intentionally "/" here — Netlify previews and the
+# Netlify production site are served at the root, unlike the GitHub Pages
+# path (/tak/). If you ever switch production fully to Netlify, update
+# the og:image absolute URLs in index.html accordingly.
+
+[build]
+  # Install wasm-pack (not pre-installed on Netlify), then run the full
+  # Turborepo build which compiles Rust → Wasm, builds @tak/shared, and
+  # bundles the React frontend.
+  command = "cargo install wasm-pack --version 0.13.1 --locked --force && npm run build"
+  publish = "packages/frontend/dist"
+
+[build.environment]
+  NODE_VERSION  = "20"
+  VITE_BASE_PATH = "/"
