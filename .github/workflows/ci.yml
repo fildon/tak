@@ -29,13 +29,14 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            ~/.cargo/bin/wasm-pack
             packages/engine/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('packages/engine/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
 
       - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        run: cargo install wasm-pack --version 0.13.0 --locked
 
       - name: Install dependencies
         run: npm ci
