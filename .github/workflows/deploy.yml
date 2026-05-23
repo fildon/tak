@@ -43,7 +43,7 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
 
       - name: Install wasm-pack
-        run: cargo install wasm-pack --version 0.13.0 --locked
+        run: which wasm-pack || cargo install wasm-pack --version 0.13.0 --locked
 
       - run: npm ci
 
