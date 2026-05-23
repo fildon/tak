@@ -15,6 +15,9 @@ packages/
 npm run build        # build all packages (Rust → Wasm, tsc, vite build)
 npm run dev          # start all dev watchers; frontend at localhost:3000
 npm run type-check   # TypeScript type-check without emit
+npm run test         # run unit tests (Vitest, packages/shared)
+npm run lint         # ESLint across all packages
+npm run format       # Prettier — format all files
 ```
 
 ## Development workflow
@@ -30,8 +33,8 @@ Every piece of work follows these steps in order:
 3. **Branch** — implement on a feature branch, never directly on `main`.
    Branch naming: `feat/issue-N-short-description` or `fix/issue-N-short-description`.
 
-4. **Implement** — make the changes. Run `npm run type-check` and `npm run build`
-   before considering work done.
+4. **Implement** — make the changes. Run `npm run type-check`, `npm run test`, and
+   `npm run build` before considering work done.
 
 5. **PR** — open a pull request with `gh pr create`. The PR body must include
    `Closes #N` so the issue closes automatically on merge. Do not merge PRs yourself —
@@ -49,5 +52,6 @@ Every piece of work follows these steps in order:
 
 - TypeScript strict mode is on; no `any` types
 - CSS Modules for all component styles
-- No linter is configured yet — follow the patterns in surrounding code
+- ESLint + Prettier are configured; run `npm run lint` and `npm run format` as needed
+- Tests are colocated: `game.test.ts` lives next to `game.ts` in `packages/shared/src/`
 - Commit messages: imperative mood, reference issue with `Closes #N` in the body
