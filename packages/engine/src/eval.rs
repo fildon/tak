@@ -4,54 +4,124 @@
 /// (positive = good for current player).
 ///
 /// Heuristic components:
-///   1. Flat/cap count advantage — each road piece on top is +100
-///   2. Road progress — BFS-based "furthest reach" from each edge pair,
-///      scaled by 60 per row/col of progress
-///
-/// These are intentionally simple so search depth dominates strength.
+///   1. Flat/cap count advantage     — each road piece on top is ±PIECE_WEIGHT
+///   2. Road progress                — BFS-based furthest reach, ±ROAD_PROGRESS_WEIGHT per step
+///   3. Threat urgency               — large penalty when opponent is one step from a road
+///   4. Flat endgame weighting       — flat advantage scaled by board-fill ratio
+///   5. Center control               — road pieces near the board centre score higher
+///   6. Stack control                — bonus for owning the top of tall stacks
 
 use crate::types::*;
 use std::collections::VecDeque;
 
 pub const SCORE_WIN: i32 = 1_000_000;
 
-pub fn evaluate(state: &GameState) -> i32 {
-    let me = state.current_player;
-    let opp = me.opponent();
+// Tunable weights
+const PIECE_WEIGHT: i32 = 100;
+const ROAD_PROGRESS_WEIGHT: i32 = 60;
+const THREAT_PENALTY: i32 = 400;
+const FLAT_ENDGAME_WEIGHT: i32 = 80;
+const CENTER_WEIGHT: i32 = 15;
+const STACK_CONTROL_WEIGHT: i32 = 20;
 
-    // Road-piece count advantage
-    let my_pieces = count_road_pieces(&state.board, state.size, me);
-    let opp_pieces = count_road_pieces(&state.board, state.size, opp);
-    let piece_score = (my_pieces - opp_pieces) * 100;
+// ---------------------------------------------------------------------------
+// Board statistics (single pass)
+// ---------------------------------------------------------------------------
 
-    // Road connectivity / progress
-    let my_progress = road_progress(&state.board, state.size, me);
-    let opp_progress = road_progress(&state.board, state.size, opp);
-    let road_score = (my_progress - opp_progress) * 60;
-
-    piece_score + road_score
+struct BoardStats {
+    my_road: i32,    // road pieces (flat/cap) owned by `me` on top
+    opp_road: i32,   // road pieces owned by opponent on top
+    filled: i32,     // number of non-empty cells
+    my_center: i32,  // sum of centre-proximity bonuses for `me`
+    opp_center: i32, // sum of centre-proximity bonuses for opponent
+    stack_score: i32, // net stack-control score (positive = good for `me`)
 }
 
-// ---------------------------------------------------------------------------
-// Flat / capstone count (road pieces on top)
-// ---------------------------------------------------------------------------
+fn board_stats(board: &[Vec<Vec<Piece>>], size: usize, me: Color) -> BoardStats {
+    let center = (size / 2) as i32;
+    let mut stats = BoardStats {
+        my_road: 0,
+        opp_road: 0,
+        filled: 0,
+        my_center: 0,
+        opp_center: 0,
+        stack_score: 0,
+    };
 
-fn count_road_pieces(board: &[Vec<Vec<Piece>>], size: usize, color: Color) -> i32 {
-    let mut n = 0i32;
     for r in 0..size {
         for c in 0..size {
-            if let Some(p) = board[r][c].last() {
-                if p.color == color && p.typ != PieceType::Wall {
-                    n += 1;
+            let stack = &board[r][c];
+            if stack.is_empty() {
+                continue;
+            }
+            stats.filled += 1;
+            let h = stack.len() as i32;
+            let top = stack.last().unwrap();
+
+            // Road piece on top (flat or capstone — not wall)
+            if top.typ != PieceType::Wall {
+                let dist = (r as i32 - center).abs() + (c as i32 - center).abs();
+                let centre_bonus = (center - dist).max(0);
+                if top.color == me {
+                    stats.my_road += 1;
+                    stats.my_center += centre_bonus;
+                } else {
+                    stats.opp_road += 1;
+                    stats.opp_center += centre_bonus;
+                }
+            }
+
+            // Stack control: who owns the top of a tall stack?
+            if h >= 2 {
+                let delta = (h - 1) * STACK_CONTROL_WEIGHT;
+                if top.color == me {
+                    stats.stack_score += delta;
+                } else {
+                    stats.stack_score -= delta;
                 }
             }
         }
     }
-    n
+
+    stats
 }
 
 // ---------------------------------------------------------------------------
-// Road progress
+// Public evaluation entry point
+// ---------------------------------------------------------------------------
+
+pub fn evaluate(state: &GameState) -> i32 {
+    let me = state.current_player;
+    let opp = me.opponent();
+
+    let BoardStats { my_road, opp_road, filled, my_center, opp_center, stack_score } =
+        board_stats(&state.board, state.size, me);
+
+    // 1. Road-piece count advantage
+    let piece_score = (my_road - opp_road) * PIECE_WEIGHT;
+
+    // 2. Road connectivity / progress (BFS, unchanged)
+    let my_progress = road_progress(&state.board, state.size, me);
+    let opp_progress = road_progress(&state.board, state.size, opp);
+    let road_score = (my_progress - opp_progress) * ROAD_PROGRESS_WEIGHT;
+
+    // 3. Threat urgency: opponent is one step from completing a road
+    //    (progress == size-1 would be a completed road, already terminal;
+    //     size-2 is the furthest non-terminal reach, i.e. one step away)
+    let threat_score = if opp_progress >= state.size as i32 - 2 { -THREAT_PENALTY } else { 0 };
+
+    // 4. Flat endgame weighting: flat advantage scaled by board-fill ratio
+    let total_cells = (state.size * state.size) as i32;
+    let flat_score = (my_road - opp_road) * FLAT_ENDGAME_WEIGHT * filled / total_cells;
+
+    // 5. Center control
+    let center_score = (my_center - opp_center) * CENTER_WEIGHT;
+
+    piece_score + road_score + threat_score + flat_score + center_score + stack_score
+}
+
+// ---------------------------------------------------------------------------
+// Road progress (BFS)
 // ---------------------------------------------------------------------------
 
 /// Returns the best (furthest) single-axis road-progress score for `color`.
