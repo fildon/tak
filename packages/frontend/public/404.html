@@ -4,21 +4,8 @@
     <meta charset="utf-8" />
     <title>Tak</title>
     <script>
-      // Redirects unknown paths back to the SPA root so React can handle routing.
-      // Technique: https://github.com/rafgraph/spa-github-pages
-      // pathSegmentsToKeep = 1 preserves the /tak repo-name prefix on GitHub Pages.
-      var l = window.location;
-      l.replace(
-        l.protocol +
-          '//' +
-          l.hostname +
-          (l.port ? ':' + l.port : '') +
-          l.pathname.split('/').slice(0, 2).join('/') +
-          '/?/' +
-          l.pathname.slice(1).split('/').slice(1).join('/').replace(/&/g, '~and~') +
-          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-          l.hash,
-      );
+      // GitHub Pages doesn't support SPA routing — redirect everything to the app root.
+      window.location.replace('/tak/');
     </script>
   </head>
   <body></body>
