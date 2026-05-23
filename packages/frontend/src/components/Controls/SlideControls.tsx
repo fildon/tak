@@ -32,7 +32,7 @@ export function SlideControls({ uiPhase, validDirections, onCountChange, onDirec
         >−</button>
         <span
           className={styles.countVal}
-          aria-label={`Carrying ${uiPhase.count} of ${uiPhase.maxCount} pieces`}
+          aria-label={`Carrying ${uiPhase.count} of ${uiPhase.maxCount}`}
         >
           {uiPhase.count}
         </span>
