@@ -81,30 +81,32 @@ export default function App() {
           </div>
         )}
 
-        <div className={styles.actions}>
-          {reviewing ? (
-            <button
-              className={styles.newGameButton}
-              onClick={() => {
-                setReviewing(false);
-                setShowSetup(true);
-              }}
-            >
-              New game
-            </button>
-          ) : (
-            <button
-              className={styles.undoButton}
-              onClick={game.undo}
-              disabled={!game.canUndo}
-              aria-label="Undo last move"
-            >
-              ↩ Undo
-            </button>
-          )}
-        </div>
+        <div className={styles.historyRow}>
+          <MoveHistory moves={game.gameState.moveHistory} size={game.gameState.size} />
 
-        <MoveHistory moves={game.gameState.moveHistory} size={game.gameState.size} />
+          <div className={styles.actions}>
+            {reviewing ? (
+              <button
+                className={styles.newGameButton}
+                onClick={() => {
+                  setReviewing(false);
+                  setShowSetup(true);
+                }}
+              >
+                New game
+              </button>
+            ) : (
+              <button
+                className={styles.undoButton}
+                onClick={game.undo}
+                disabled={!game.canUndo}
+                aria-label="Undo last move"
+              >
+                ↩ Undo
+              </button>
+            )}
+          </div>
+        </div>
       </main>
 
       {game.gameState.result && !reviewing && (
