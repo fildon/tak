@@ -81,11 +81,11 @@ export default function App() {
           </div>
         )}
 
-        <div className={styles.historyRow}>
-          <MoveHistory moves={game.gameState.moveHistory} size={game.gameState.size} />
-
-          <div className={styles.actions}>
-            {reviewing ? (
+        <MoveHistory
+          moves={game.gameState.moveHistory}
+          size={game.gameState.size}
+          rightSlot={
+            reviewing ? (
               <button
                 className={styles.newGameButton}
                 onClick={() => {
@@ -104,9 +104,9 @@ export default function App() {
               >
                 ↩ Undo
               </button>
-            )}
-          </div>
-        </div>
+            )
+          }
+        />
       </main>
 
       {game.gameState.result && !reviewing && (

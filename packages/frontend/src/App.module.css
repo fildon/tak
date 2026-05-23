@@ -29,20 +29,6 @@
   transition: opacity 0.15s;
 }
 
-.historyRow {
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.actions {
-  display: flex;
-  align-items: flex-start;
-  flex-shrink: 0;
-  margin-left: auto;
-  padding-left: 8px;
-}
-
 .undoButton {
   background: none;
   border: 1px solid var(--ui-border);
