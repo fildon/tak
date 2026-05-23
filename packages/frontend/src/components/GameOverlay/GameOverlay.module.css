@@ -68,6 +68,24 @@
   background: rgba(93, 158, 93, 0.3);
 }
 
+.reviewButton {
+  padding: 8px 32px;
+  border-radius: 8px;
+  border: 1px solid var(--ui-border);
+  background: none;
+  color: var(--ui-text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    color 0.1s,
+    border-color 0.1s;
+}
+
+.reviewButton:hover {
+  color: var(--ui-text);
+  border-color: var(--ui-text-dim);
+}
+
 .sizes {
   display: flex;
   gap: 6px;

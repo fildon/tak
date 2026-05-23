@@ -16,6 +16,7 @@ export default function App() {
   const game = useGameState();
   const { validPlaceCells, validDirections } = useValidMoves(game.gameState, game.uiPhase);
   const [showSetup, setShowSetup] = useState(true);
+  const [reviewing, setReviewing] = useState(false);
 
   const isThinking = game.uiPhase.phase === 'cpu-thinking';
 
@@ -29,17 +30,19 @@ export default function App() {
       />
 
       <main className={styles.main}>
-        <SizeSelector
-          currentSize={game.gameState.size}
-          onSelect={(size) =>
-            game.startGame({
-              mode: game.gameMode,
-              cpuColor: game.cpuColor,
-              size,
-              difficulty: game.difficulty,
-            })
-          }
-        />
+        {!reviewing && (
+          <SizeSelector
+            currentSize={game.gameState.size}
+            onSelect={(size) =>
+              game.startGame({
+                mode: game.gameMode,
+                cpuColor: game.cpuColor,
+                size,
+                difficulty: game.difficulty,
+              })
+            }
+          />
+        )}
 
         <Board
           gameState={game.gameState}
@@ -50,54 +53,73 @@ export default function App() {
           className={isThinking ? styles.thinking : undefined}
         />
 
-        <div className={styles.controls}>
-          {game.uiPhase.phase === 'distributing' ? (
-            <DistributeControls
-              uiPhase={game.uiPhase}
-              onDropChange={game.setDropAt}
-              onRemoveStep={game.removeLastStep}
-              onAddStep={game.addStep}
-              onConfirm={game.confirmSlide}
-              onCancel={game.cancelSelection}
-            />
-          ) : game.uiPhase.phase === 'sliding' ? (
-            <SlideControls
-              uiPhase={game.uiPhase}
-              validDirections={validDirections}
-              onCountChange={game.setSlideCount}
-              onDirection={game.clickDirection}
-            />
-          ) : (
-            <PieceSelector
-              gameState={game.gameState}
-              uiPhase={game.uiPhase}
-              onSelect={game.selectPieceType}
-            />
-          )}
-        </div>
+        {!reviewing && (
+          <div className={styles.controls}>
+            {game.uiPhase.phase === 'distributing' ? (
+              <DistributeControls
+                uiPhase={game.uiPhase}
+                onDropChange={game.setDropAt}
+                onRemoveStep={game.removeLastStep}
+                onAddStep={game.addStep}
+                onConfirm={game.confirmSlide}
+                onCancel={game.cancelSelection}
+              />
+            ) : game.uiPhase.phase === 'sliding' ? (
+              <SlideControls
+                uiPhase={game.uiPhase}
+                validDirections={validDirections}
+                onCountChange={game.setSlideCount}
+                onDirection={game.clickDirection}
+              />
+            ) : (
+              <PieceSelector
+                gameState={game.gameState}
+                uiPhase={game.uiPhase}
+                onSelect={game.selectPieceType}
+              />
+            )}
+          </div>
+        )}
 
         <div className={styles.actions}>
-          <button
-            className={styles.undoButton}
-            onClick={game.undo}
-            disabled={!game.canUndo}
-            aria-label="Undo last move"
-          >
-            ↩ Undo
-          </button>
+          {reviewing ? (
+            <button
+              className={styles.newGameButton}
+              onClick={() => {
+                setReviewing(false);
+                setShowSetup(true);
+              }}
+            >
+              New game
+            </button>
+          ) : (
+            <button
+              className={styles.undoButton}
+              onClick={game.undo}
+              disabled={!game.canUndo}
+              aria-label="Undo last move"
+            >
+              ↩ Undo
+            </button>
+          )}
         </div>
 
         <MoveHistory moves={game.gameState.moveHistory} size={game.gameState.size} />
       </main>
 
-      {game.gameState.result && (
-        <GameOverlay result={game.gameState.result} onPlayAgain={() => setShowSetup(true)} />
+      {game.gameState.result && !reviewing && (
+        <GameOverlay
+          result={game.gameState.result}
+          onPlayAgain={() => setShowSetup(true)}
+          onReview={() => setReviewing(true)}
+        />
       )}
 
       {showSetup && (
         <GameSetup
           onStart={(opts) => {
             game.startGame(opts);
+            setReviewing(false);
             setShowSetup(false);
           }}
         />

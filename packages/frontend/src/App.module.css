@@ -54,3 +54,18 @@
   opacity: 0.35;
   cursor: default;
 }
+
+.newGameButton {
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.newGameButton:hover {
+  background: rgba(93, 158, 93, 0.15);
+}

@@ -4,6 +4,7 @@ import styles from './GameOverlay.module.css';
 interface Props {
   result: GameResult;
   onPlayAgain: () => void;
+  onReview: () => void;
 }
 
 const REASON_LABEL: Record<GameResult['reason'], string> = {
@@ -13,7 +14,7 @@ const REASON_LABEL: Record<GameResult['reason'], string> = {
   resign: 'by resignation',
 };
 
-export function GameOverlay({ result, onPlayAgain }: Props) {
+export function GameOverlay({ result, onPlayAgain, onReview }: Props) {
   const isDraw = result.winner === null;
 
   return (
@@ -32,6 +33,9 @@ export function GameOverlay({ result, onPlayAgain }: Props) {
 
         <button className={styles.playAgain} onClick={onPlayAgain}>
           Play again
+        </button>
+        <button className={styles.reviewButton} onClick={onReview}>
+          Review game
         </button>
       </div>
     </div>
