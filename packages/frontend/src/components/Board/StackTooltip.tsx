@@ -23,14 +23,20 @@ interface Props {
 export function StackTooltip({ stack, anchorRect }: Props) {
   if (!anchorRect || stack.length < 2) return null;
 
-  // Centre horizontally above the cell; leave an 8 px gap.
+  // Centre horizontally on the cell. Flip below when there isn't enough
+  // room above — the CSS max-height is 280 px, so that's the worst case.
+  const gap = 8;
+  const maxTooltipHeight = 280;
+  const showBelow = anchorRect.top < maxTooltipHeight + gap;
+
   const left = anchorRect.left + anchorRect.width / 2;
-  const top = anchorRect.top - 8;
+  const top = showBelow ? anchorRect.bottom + gap : anchorRect.top - gap;
+  const transform = showBelow ? 'translate(-50%, 0)' : 'translate(-50%, -100%)';
 
   return createPortal(
     <div
       className={styles.tooltip}
-      style={{ left, top }}
+      style={{ left, top, transform }}
       role="tooltip"
       aria-label="Stack contents"
     >
