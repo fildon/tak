@@ -126,20 +126,34 @@ pub fn evaluate(state: &GameState) -> i32 {
 
 /// Returns the best (furthest) single-axis road-progress score for `color`.
 ///
-/// For each axis (N-S and E-W) we run a BFS from the near edge and measure
-/// how many rows/columns deep the connected component reaches.  A completed
-/// road scores `size - 1`.  We return the maximum of the two axes.
+/// For each axis (N-S and E-W) we run a BFS from **both** edges and take the
+/// maximum depth reached.  Seeding from both ends is critical for correctness:
+/// a chain built from the south (e.g. white pieces at c1+c2 on a 3×3) gets
+/// zero credit from a north-only seed even though it is one step from winning.
+///
+/// A completed road scores `size - 1`.  We return the maximum of the two axes.
 fn road_progress(board: &[Vec<Vec<Piece>>], size: usize, color: Color) -> i32 {
-    let ns = furthest_reach(board, size, color, true);
-    let ew = furthest_reach(board, size, color, false);
+    let ns = furthest_reach(board, size, color, true, false)
+        .max(furthest_reach(board, size, color, true, true));
+    let ew = furthest_reach(board, size, color, false, false)
+        .max(furthest_reach(board, size, color, false, true));
     ns.max(ew)
 }
 
+/// BFS from one edge of the board and return the farthest row/column the
+/// connected component of `color` reaches toward the opposite edge.
+///
+/// `north_south = true` → N-S axis; `false` → E-W axis.
+/// `reverse = false`    → seed from the near edge (row 0 / col 0).
+/// `reverse = true`     → seed from the far edge (row size-1 / col size-1)
+///                        and normalize progress so "reaching the near edge"
+///                        still scores `size - 1`.
 fn furthest_reach(
     board: &[Vec<Vec<Piece>>],
     size: usize,
     color: Color,
     north_south: bool,
+    reverse: bool,
 ) -> i32 {
     let is_road = |r: usize, c: usize| -> bool {
         board[r][c]
@@ -151,9 +165,10 @@ fn furthest_reach(
     let mut queue: VecDeque<(usize, usize)> = VecDeque::new();
     let mut best = 0i32;
 
-    // Seed from the near edge.
+    // Seed from the near edge, or the far edge when reversed.
+    let edge = if reverse { size - 1 } else { 0 };
     for i in 0..size {
-        let (r, c) = if north_south { (0, i) } else { (i, 0) };
+        let (r, c) = if north_south { (edge, i) } else { (i, edge) };
         if is_road(r, c) && !visited[r * size + c] {
             visited[r * size + c] = true;
             queue.push_back((r, c));
@@ -161,7 +176,11 @@ fn furthest_reach(
     }
 
     while let Some((r, c)) = queue.pop_front() {
-        let progress = if north_south { r } else { c } as i32;
+        let raw = if north_south { r } else { c } as i32;
+        // Normalize: progress is distance from the seeding edge toward the far
+        // edge.  Forward: the raw index grows away from edge 0.  Reversed: we
+        // subtract from (size-1) so that reaching the near edge still = size-1.
+        let progress = if reverse { (size as i32 - 1) - raw } else { raw };
         if progress > best {
             best = progress;
         }
@@ -316,6 +335,113 @@ mod tests {
             "full-board flat advantage ({}) should outscore sparse ({})",
             evaluate(&dense),
             evaluate(&sparse),
+        );
+    }
+
+    /// Bidirectional road_progress: a chain built from the far edge must score
+    /// the same as an equivalent chain built from the near edge.
+    ///
+    /// Concretely: White pieces at c1+c2 on a 3×3 (rows 1–2 in col 2) form an
+    /// NS chain that seeds from the *south*.  Without the bidirectional fix the
+    /// north-only BFS gives them zero progress; with the fix they score 1
+    /// (one step from the north edge).  This mirrors a symmetrical chain at
+    /// rows 0–1 which the forward BFS correctly credits with progress 1.
+    #[test]
+    fn road_progress_bidirectional_far_edge_chain() {
+        // White chain at rows 1–2, col 2 on a 3×3 (builds from south edge).
+        let mut board_south = empty_board(3);
+        board_south[1][2] = vec![flat(Color::White)]; // row 1 = c2
+        board_south[2][2] = vec![flat(Color::White)]; // row 2 = c1
+
+        // Equivalent chain at rows 0–1, col 2 (builds from north edge).
+        let mut board_north = empty_board(3);
+        board_north[0][2] = vec![flat(Color::White)]; // row 0 = c3
+        board_north[1][2] = vec![flat(Color::White)]; // row 1 = c2
+
+        // super:: prefix required for the private road_progress function.
+        let prog_south = super::road_progress(&board_south, 3, Color::White);
+        let prog_north = super::road_progress(&board_north, 3, Color::White);
+        assert_eq!(
+            prog_south, prog_north,
+            "chain from south (prog={prog_south}) must equal chain from north (prog={prog_north})"
+        );
+        assert!(prog_south > 0, "a 2-piece chain must have non-zero road progress");
+    }
+
+    /// Regression: PTN sequence `1a3 2c1 3c2 4c3 5b3` leaves Black to move
+    /// on a 3×3 board.  The move `c3<` (slide c3 west, capturing b3) is
+    /// immediately losing — it empties c3 and lets White win with `c3`.
+    /// The alternative `a3>` (slide a3 east, same capture target) leaves c3
+    /// blocked by Black's own flat, preventing White's road.
+    ///
+    /// With the bidirectional fix White's c-column (c1+c2→c3) now gets NS
+    /// road-progress credit from the south, so the raw depth-1 eval no longer
+    /// incorrectly awards `c3<` a massive bonus over `a3>`.
+    #[test]
+    fn c3_slide_west_no_larger_eval_than_a3_slide_east() {
+        // Board after 1a3 2c1 3c2 4c3 5b3 on a 3×3:
+        //   row0 (rank 3): a3=[Black], b3=[White], c3=[Black]
+        //   row1 (rank 2): c2=[White]
+        //   row2 (rank 1): c1=[White]
+        // current_player = Black (about to make move 6).
+        let make_board = |a3: Color, b3: Color, c3_col: Option<Color>| {
+            let mut b: Vec<Vec<Vec<Piece>>> = vec![vec![vec![]; 3]; 3];
+            b[0][0] = vec![flat(a3)];      // a3
+            b[0][1] = vec![flat(b3)];      // b3
+            if let Some(c) = c3_col { b[0][2] = vec![flat(c)]; } // c3
+            b[1][2] = vec![flat(Color::White)]; // c2
+            b[2][2] = vec![flat(Color::White)]; // c1
+            b
+        };
+
+        let base_state = GameState {
+            board: make_board(Color::Black, Color::White, Some(Color::Black)),
+            size: 3,
+            current_player: Color::Black,
+            players: Players {
+                white: PlayerState { flat_count: 7, capstone_count: 0 },
+                black: PlayerState { flat_count: 8, capstone_count: 0 },
+            },
+            turn_number: 6,
+            result: None,
+        };
+
+        // After c3< (Black slides c3 west onto b3):
+        //   b3 becomes [White,Black], c3 empty.
+        let mut after_c3_left = base_state.clone();
+        after_c3_left.board[0][2].clear();              // c3 emptied
+        after_c3_left.board[0][1] = vec![flat(Color::White), flat(Color::Black)]; // b3=[W,B]
+        after_c3_left.current_player = Color::White;    // it's White's turn
+
+        // After a3> (Black slides a3 east onto b3):
+        //   b3 becomes [White,Black], a3 empty; c3 still blocked by Black.
+        let mut after_a3_right = base_state.clone();
+        after_a3_right.board[0][0].clear();             // a3 emptied
+        after_a3_right.board[0][1] = vec![flat(Color::White), flat(Color::Black)]; // b3=[W,B]
+        after_a3_right.current_player = Color::White;
+
+        // evaluate() returns score from White's perspective (current_player).
+        let eval_c3_left  = evaluate(&after_c3_left);
+        let eval_a3_right = evaluate(&after_a3_right);
+
+        // After c3< White can place c3 and win immediately — White's true
+        // position is SCORE_WIN.  The static heuristic cannot see one move
+        // ahead, but with the bidirectional road-progress fix White at least
+        // gets NS credit for its c1+c2 chain, equalising the two evals.
+        //
+        // Without the fix the north-only BFS sees White's c-column progress as 0
+        // while the false threat penalty gives Black +400, so eval(c3<)=-480
+        // versus eval(a3>)=-20: White looks dramatically worse in the position
+        // where it actually wins next move, inverting the ordering.
+        //
+        // Assert: eval(after c3<) must be ≥ eval(after a3>).
+        // Pre-fix: -480 ≥ -20 → FAIL  (bug detected)
+        // Post-fix: -420 ≥ -420 → PASS (evals equalise; depth-2 resolves correctly)
+        assert!(
+            eval_c3_left >= eval_a3_right,
+            "White's static eval after c3< ({eval_c3_left}) should be ≥ after a3> \
+             ({eval_a3_right}): c3< lets White win immediately so it must not look \
+             worse than a3> in the heuristic"
         );
     }
 }
